@@ -1,0 +1,16 @@
+# Runtime dependencies will be pinned after the first executable pipeline is built.
+numpy
+pandas
+pyarrow
+requests
+holidays
+SQLAlchemy
+psycopg[binary]
+scikit-learn
+statsmodels
+openpyxl
+
+# Development and validation
+pytest
+ruff
+

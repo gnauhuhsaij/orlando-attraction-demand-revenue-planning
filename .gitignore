@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Local databases and logs
+*.db
+*.sqlite
+*.log
+
+# Generated data and outputs
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+outputs/figures/*
+!outputs/figures/.gitkeep
+outputs/forecasts/*
+!outputs/forecasts/.gitkeep
+
+# Tableau local/generated files
+*.hyper
+*.tfl
+*.tflx
+
+# Excel temporary files
+~$*.xlsx
+
