@@ -205,6 +205,15 @@ IDENTITY_DIMENSIONS = (
     ("dim_campaign", "campaign_key"),
 )
 
+TRANSFORMATION_SCRIPTS = (
+    "sql/transformations/create_analysis_views.sql",
+)
+
+VALIDATION_SCRIPTS = (
+    "sql/tests/validation_queries.sql",
+    "sql/tests/analysis_view_checks.sql",
+)
+
 
 # Purpose: Parse command-line settings without exposing connection credentials.
 # Used by: main.
@@ -356,8 +365,8 @@ def apply_schema(database_url: str, schema_path: Path) -> None:
         execute_sql_script(cursor, schema_path.read_text(encoding="utf-8"))
 
 
-# Purpose: Remove the validation file's outer transaction for nested execution.
-# Used by: run_validation_script and unit tests.
+# Purpose: Remove a SQL file's outer transaction for nested execution.
+# Used by: run_transaction_wrapped_script and unit tests.
 def strip_outer_transaction(script: str) -> str:
     lines = script.strip().splitlines()
     begin_indexes = [
@@ -556,14 +565,14 @@ def compare_reconciliation(
         raise DataLoadError("Database reconciliation failed:\n- " + "\n- ".join(problems))
 
 
-# Purpose: Execute the repository SQL quality gate inside the load transaction.
-# Used by: run_load after manifest reconciliation passes.
-def run_validation_script(
-    cursor: psycopg.Cursor[Any], validation_path: Path
+# Purpose: Execute a repository SQL script inside the atomic load transaction.
+# Used by: run_load for transformation and validation scripts.
+def run_transaction_wrapped_script(
+    cursor: psycopg.Cursor[Any], script_path: Path
 ) -> list[tuple[Any, ...]]:
-    if not validation_path.is_file():
-        raise DataLoadError(f"Validation SQL is missing: {validation_path}")
-    script = strip_outer_transaction(validation_path.read_text(encoding="utf-8"))
+    if not script_path.is_file():
+        raise DataLoadError(f"Repository SQL script is missing: {script_path}")
+    script = strip_outer_transaction(script_path.read_text(encoding="utf-8"))
     return execute_sql_script(cursor, script)
 
 
@@ -604,12 +613,12 @@ def run_load(project_root: Path, database_url: str) -> dict[str, Any]:
         truncate_analytics_tables(cursor)
         load_all_tables(cursor, project_root)
         reset_dimension_sequences(cursor)
+        for relative_path in TRANSFORMATION_SCRIPTS:
+            run_transaction_wrapped_script(cursor, project_root / relative_path)
         summary = database_reconciliation(cursor)
         compare_reconciliation(summary, manifests)
-        run_validation_script(
-            cursor,
-            project_root / "sql" / "tests" / "validation_queries.sql",
-        )
+        for relative_path in VALIDATION_SCRIPTS:
+            run_transaction_wrapped_script(cursor, project_root / relative_path)
     return summary
 
 
