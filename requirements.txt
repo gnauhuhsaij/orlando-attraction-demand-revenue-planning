@@ -9,8 +9,8 @@ psycopg[binary]
 scikit-learn
 statsmodels
 openpyxl
+pypdf
 
 # Development and validation
 pytest
 ruff
-
