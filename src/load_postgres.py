@@ -207,6 +207,7 @@ IDENTITY_DIMENSIONS = (
 
 TRANSFORMATION_SCRIPTS = (
     "sql/transformations/create_analysis_views.sql",
+    "sql/transformations/create_forecast_input_view.sql",
 )
 
 VALIDATION_SCRIPTS = (

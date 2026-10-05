@@ -6,6 +6,7 @@ BEGIN;
 SET LOCAL search_path TO analytics, public;
 
 -- Drop dependent views first so column-contract changes remain rerunnable.
+DROP VIEW IF EXISTS vw_forecast_input;
 DROP VIEW IF EXISTS vw_daily_action_monitor;
 DROP VIEW IF EXISTS vw_campaign_performance;
 DROP VIEW IF EXISTS vw_monthly_channel_product_performance;
