@@ -135,6 +135,7 @@ LOAD_SPECS = (
         relative_path="data/processed/synthetic/fact_daily_plan.csv",
         columns=(
             "date_key",
+            "planned_price_multiplier",
             "available_capacity",
             "demand_target",
             "revenue_target",
@@ -208,6 +209,7 @@ IDENTITY_DIMENSIONS = (
 TRANSFORMATION_SCRIPTS = (
     "sql/transformations/create_analysis_views.sql",
     "sql/transformations/create_forecast_input_view.sql",
+    "sql/transformations/create_forecast_views.sql",
 )
 
 VALIDATION_SCRIPTS = (

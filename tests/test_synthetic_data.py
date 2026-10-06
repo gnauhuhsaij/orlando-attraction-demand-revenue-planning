@@ -12,6 +12,7 @@ from src.generate_sales_data import (
     build_channel_dimension,
     build_daily_plan,
     build_demand_drivers,
+    build_price_plan,
     build_product_dimension,
     generate_ticket_sales,
     validate_synthetic_outputs,
@@ -88,8 +89,9 @@ def test_dimensions_match_documented_business_assumptions() -> None:
 
 def test_demand_drivers_are_reproducible_and_capacity_limited() -> None:
     inputs = _public_inputs_fixture()
-    first = build_demand_drivers(inputs, np.random.default_rng(100))
-    second = build_demand_drivers(inputs, np.random.default_rng(100))
+    price_plan = build_price_plan(inputs["date"], np.random.default_rng(99))
+    first = build_demand_drivers(inputs, price_plan, np.random.default_rng(100))
+    second = build_demand_drivers(inputs, price_plan, np.random.default_rng(100))
 
     pd.testing.assert_frame_equal(first, second)
     assert len(first) == 1_096
@@ -100,6 +102,59 @@ def test_demand_drivers_are_reproducible_and_capacity_limited() -> None:
     ).all()
     assert first["random_factor"].nunique() > 1_000
     assert _weather_factor(78, 0, False) > _weather_factor(78, 1.5, True)
+    historical_prices = price_plan[
+        price_plan["date_key"].between(20230101, 20251231)
+    ]
+    assert np.allclose(
+        first["price_multiplier"],
+        historical_prices["planned_price_multiplier"],
+    )
+
+
+def test_price_plan_is_reproducible_and_varies_within_calendar_segments() -> None:
+    inputs = _public_inputs_fixture()
+    first = build_price_plan(inputs["date"], np.random.default_rng(150))
+    second = build_price_plan(inputs["date"], np.random.default_rng(150))
+
+    pd.testing.assert_frame_equal(first, second)
+    assert len(first) == 1_126
+    assert first["planned_price_multiplier"].between(0.85, 1.30).all()
+    assert first["planned_price_multiplier"].nunique() > 100
+
+    price_context = first.merge(
+        inputs["date"][
+            ["date_key", "is_weekend", "season", "holiday_flag"]
+        ],
+        on="date_key",
+        validate="one_to_one",
+    )
+    within_segment_counts = price_context.groupby(
+        ["is_weekend", "season", "holiday_flag"]
+    )["planned_price_multiplier"].nunique()
+    assert (within_segment_counts > 1).any()
+
+
+def test_planned_price_changes_generated_demand() -> None:
+    inputs = _public_inputs_fixture()
+    base_price_plan = build_price_plan(
+        inputs["date"], np.random.default_rng(175)
+    )
+    higher_price_plan = base_price_plan.copy()
+    higher_price_plan["planned_price_multiplier"] = (
+        higher_price_plan["planned_price_multiplier"] * 1.02
+    ).round(4)
+
+    base_demand = build_demand_drivers(
+        inputs, base_price_plan, np.random.default_rng(176)
+    )
+    higher_price_demand = build_demand_drivers(
+        inputs, higher_price_plan, np.random.default_rng(176)
+    )
+
+    assert (
+        higher_price_demand["latent_demand"]
+        < base_demand["latent_demand"]
+    ).all()
 
 
 def _integrated_outputs() -> tuple[
@@ -112,7 +167,10 @@ def _integrated_outputs() -> tuple[
     pd.DataFrame,
 ]:
     inputs = _public_inputs_fixture()
-    drivers = build_demand_drivers(inputs, np.random.default_rng(200))
+    price_plan = build_price_plan(inputs["date"], np.random.default_rng(199))
+    drivers = build_demand_drivers(
+        inputs, price_plan, np.random.default_rng(200)
+    )
     sample = drivers[
         drivers["calendar_date"].between("2023-06-15", "2023-06-19")
     ].copy()
@@ -125,7 +183,7 @@ def _integrated_outputs() -> tuple[
     campaigns = build_campaign_dimension()
     sales = generate_ticket_sales(sample, np.random.default_rng(201))
     campaign_daily = build_campaign_daily(sales, np.random.default_rng(202))
-    daily_plan = build_daily_plan(inputs["date"])
+    daily_plan = build_daily_plan(inputs["date"], price_plan)
     return (
         inputs,
         products,

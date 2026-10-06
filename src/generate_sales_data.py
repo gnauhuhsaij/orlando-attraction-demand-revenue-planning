@@ -29,6 +29,8 @@ MAX_REFUND_DATE = date(2026, 1, 30)
 BASE_DAILY_DEMAND = 1_200
 PRICE_ELASTICITY = -1.10
 EXPECTED_REFUND_RATE = 0.04
+PRICE_PLAN_ADJUSTMENT_STDDEV = 0.02
+PRICE_PLAN_ADJUSTMENT_LIMIT = 0.05
 
 EASTERN_TIME = ZoneInfo("America/New_York")
 
@@ -358,9 +360,9 @@ def load_public_inputs(project_root: Path) -> dict[str, pd.DataFrame]:
     return {name: pd.read_csv(path) for name, path in paths.items()}
 
 
-# Purpose: Calculate the date-specific list-price multiplier.
-# Used by: build_demand_drivers and build_daily_plan.
-def _price_multiplier(row: Any) -> float:
+# Purpose: Calculate the calendar-based starting point for a planned price.
+# Used by: build_price_plan.
+def _calendar_price_multiplier(row: Any) -> float:
     multiplier = 1.0
     if bool(row.is_weekend):
         multiplier += 0.06
@@ -371,6 +373,38 @@ def _price_multiplier(row: Any) -> float:
     if bool(row.holiday_flag):
         multiplier += 0.04
     return round(multiplier, 4)
+
+
+# Purpose: Create reproducible observed price variation around calendar pricing.
+# Used by: run_generation and the synthetic-data unit tests.
+def build_price_plan(
+    date_dimension: pd.DataFrame, rng: np.random.Generator
+) -> pd.DataFrame:
+    dates = date_dimension.copy()
+    dates["calendar_date"] = pd.to_datetime(dates["calendar_date"])
+    dates = dates[
+        dates["calendar_date"].between(
+            pd.Timestamp(HISTORY_START), pd.Timestamp(PLAN_END)
+        )
+    ].sort_values("date_key")
+
+    calendar_multipliers = np.array(
+        [
+            _calendar_price_multiplier(row)
+            for row in dates.itertuples(index=False)
+        ],
+        dtype=float,
+    )
+    planned_adjustments = np.clip(
+        rng.normal(0, PRICE_PLAN_ADJUSTMENT_STDDEV, len(dates)),
+        -PRICE_PLAN_ADJUSTMENT_LIMIT,
+        PRICE_PLAN_ADJUSTMENT_LIMIT,
+    )
+    dates["planned_price_multiplier"] = np.round(
+        calendar_multipliers * (1 + planned_adjustments),
+        4,
+    )
+    return dates[["date_key", "planned_price_multiplier"]].reset_index(drop=True)
 
 
 # Purpose: Convert temperature, rain, and severe weather into a demand factor.
@@ -432,6 +466,7 @@ def _prepare_market_benchmarks(mco: pd.DataFrame, tdt: pd.DataFrame) -> pd.DataF
 # Used by: run_generation and the synthetic-data unit tests.
 def build_demand_drivers(
     public_inputs: dict[str, pd.DataFrame],
+    price_plan: pd.DataFrame,
     rng: np.random.Generator,
     campaign_specs: tuple[CampaignSpec, ...] = CAMPAIGN_SPECS,
 ) -> pd.DataFrame:
@@ -446,6 +481,14 @@ def build_demand_drivers(
     daily = dates.merge(weather, on="date_key", how="left", validate="one_to_one")
     if daily["avg_temperature_f"].isna().any():
         raise SyntheticDataError("Weather is missing for at least one historical date")
+    daily = daily.merge(
+        price_plan[["date_key", "planned_price_multiplier"]],
+        on="date_key",
+        how="left",
+        validate="one_to_one",
+    )
+    if daily["planned_price_multiplier"].isna().any():
+        raise SyntheticDataError("Price plan is missing for at least one historical date")
 
     daily["month_start"] = daily["calendar_date"].dt.to_period("M").dt.start_time
     market = _prepare_market_benchmarks(public_inputs["mco"], public_inputs["tdt"])
@@ -463,9 +506,7 @@ def build_demand_drivers(
     daily["season_factor"] = daily["season"].map(SEASON_FACTORS)
     daily["holiday_factor"] = np.where(daily["holiday_flag"], 1.12, 1.0)
     daily["school_break_factor"] = np.where(daily["school_break_flag"], 1.20, 1.0)
-    daily["price_multiplier"] = [
-        _price_multiplier(row) for row in daily.itertuples(index=False)
-    ]
+    daily["price_multiplier"] = daily["planned_price_multiplier"].astype(float)
     daily["price_factor"] = daily["price_multiplier"] ** PRICE_ELASTICITY
     daily["weather_factor"] = [
         _weather_factor(
@@ -809,9 +850,11 @@ def build_campaign_daily(
     )
 
 
-# Purpose: Create historical and future capacity, demand, revenue, and staffing plans.
+# Purpose: Create historical and future price, capacity, target, and staffing plans.
 # Used by: run_generation and the synthetic-data unit tests.
-def build_daily_plan(date_dimension: pd.DataFrame) -> pd.DataFrame:
+def build_daily_plan(
+    date_dimension: pd.DataFrame, price_plan: pd.DataFrame
+) -> pd.DataFrame:
     dates = date_dimension.copy()
     dates["calendar_date"] = pd.to_datetime(dates["calendar_date"])
     dates = dates[
@@ -819,12 +862,21 @@ def build_daily_plan(date_dimension: pd.DataFrame) -> pd.DataFrame:
             pd.Timestamp(HISTORY_START), pd.Timestamp(PLAN_END)
         )
     ].copy()
+    dates = dates.merge(
+        price_plan[["date_key", "planned_price_multiplier"]],
+        on="date_key",
+        how="left",
+        validate="one_to_one",
+    )
+    if dates["planned_price_multiplier"].isna().any():
+        raise SyntheticDataError("Price plan is missing for at least one plan date")
     weighted_base_price = sum(
         product.base_price * product.selection_weight for product in PRODUCT_SPECS
     )
     records = []
     for row in dates.itertuples(index=False):
         capacity = _available_capacity(row)
+        price_multiplier = float(row.planned_price_multiplier)
         demand_target = round(
             BASE_DAILY_DEMAND
             * DAY_OF_WEEK_FACTORS[row.day_of_week]
@@ -832,9 +884,9 @@ def build_daily_plan(date_dimension: pd.DataFrame) -> pd.DataFrame:
             * (1.12 if row.holiday_flag else 1.0)
             * (1.20 if row.school_break_flag else 1.0)
             * YEAR_FACTORS[row.year_number]
+            * price_multiplier**PRICE_ELASTICITY
         )
         demand_target = min(capacity, demand_target)
-        price_multiplier = _price_multiplier(row)
         revenue_target = round(
             demand_target * weighted_base_price * price_multiplier * 0.93, 2
         )
@@ -842,6 +894,7 @@ def build_daily_plan(date_dimension: pd.DataFrame) -> pd.DataFrame:
         records.append(
             {
                 "date_key": int(row.date_key),
+                "planned_price_multiplier": price_multiplier,
                 "available_capacity": capacity,
                 "demand_target": demand_target,
                 "revenue_target": revenue_target,
@@ -899,6 +952,31 @@ def validate_synthetic_outputs(
         raise SyntheticDataError("Campaign facts contain an unknown date_key")
     if not set(daily_plan["date_key"].astype(int)).issubset(valid_date_keys):
         raise SyntheticDataError("Daily plans contain an unknown date_key")
+    if not daily_plan["planned_price_multiplier"].between(0.85, 1.30).all():
+        raise SyntheticDataError("Planned price multiplier is outside expected bounds")
+
+    plan_context = daily_plan.merge(
+        date_dimension[
+            ["date_key", "is_weekend", "season", "holiday_flag"]
+        ],
+        on="date_key",
+        how="left",
+        validate="one_to_one",
+    )
+    calendar_prices = np.array(
+        [
+            _calendar_price_multiplier(row)
+            for row in plan_context.itertuples(index=False)
+        ]
+    )
+    planned_prices = plan_context["planned_price_multiplier"].to_numpy(dtype=float)
+    if np.allclose(planned_prices, calendar_prices, atol=0.0001):
+        raise SyntheticDataError(
+            "Planned prices contain no variation beyond calendar pricing"
+        )
+    relative_adjustments = planned_prices / calendar_prices - 1
+    if np.abs(relative_adjustments).max() > PRICE_PLAN_ADJUSTMENT_LIMIT + 0.0002:
+        raise SyntheticDataError("Planned price adjustment exceeds its documented limit")
 
     if (ticket_sales["purchase_date_key"] > ticket_sales["visit_date_key"]).any():
         raise SyntheticDataError("A visit date occurs before its purchase date")
@@ -925,6 +1003,24 @@ def validate_synthetic_outputs(
         raise SyntheticDataError("Negative net revenue")
     if (ticket_sales["units_refunded"] > ticket_sales["units_sold"]).any():
         raise SyntheticDataError("Refunded units exceed sold units")
+
+    product_base_prices = product.set_index("product_key")["base_price"]
+    visit_price_multipliers = daily_plan.set_index("date_key")[
+        "planned_price_multiplier"
+    ]
+    unrounded_unit_prices = (
+        ticket_sales["product_key"].map(product_base_prices)
+        * ticket_sales["visit_date_key"].map(visit_price_multipliers)
+    )
+    expected_unit_prices = np.fromiter(
+        (round(float(value), 2) for value in unrounded_unit_prices),
+        dtype=float,
+        count=len(unrounded_unit_prices),
+    )
+    if not np.allclose(
+        ticket_sales["unit_list_price"], expected_unit_prices, atol=0.001
+    ):
+        raise SyntheticDataError("Ticket prices do not match the daily price plan")
 
     active = ticket_sales["sale_status"] == "active"
     if (
@@ -1028,14 +1124,17 @@ def run_generation(project_root: Path, *, seed: int = RANDOM_SEED) -> dict[str, 
     product = build_product_dimension()
     channel = build_channel_dimension()
     campaign = build_campaign_dimension()
+    price_plan = build_price_plan(
+        public_inputs["date"], np.random.default_rng(seed + 4)
+    )
     demand_drivers = build_demand_drivers(
-        public_inputs, np.random.default_rng(seed + 1)
+        public_inputs, price_plan, np.random.default_rng(seed + 1)
     )
     ticket_sales = generate_ticket_sales(
         demand_drivers, np.random.default_rng(seed + 2)
     )
     campaign_daily = build_campaign_daily(ticket_sales, np.random.default_rng(seed + 3))
-    daily_plan = build_daily_plan(public_inputs["date"])
+    daily_plan = build_daily_plan(public_inputs["date"], price_plan)
     validation = validate_synthetic_outputs(
         product,
         channel,
@@ -1084,6 +1183,8 @@ def run_generation(project_root: Path, *, seed: int = RANDOM_SEED) -> dict[str, 
             "base_daily_demand": BASE_DAILY_DEMAND,
             "approximate_daily_capacity": 2_500,
             "price_elasticity": PRICE_ELASTICITY,
+            "planned_price_adjustment_stddev": PRICE_PLAN_ADJUSTMENT_STDDEV,
+            "planned_price_adjustment_limit": PRICE_PLAN_ADJUSTMENT_LIMIT,
             "expected_refund_rate": EXPECTED_REFUND_RATE,
             "maximum_booking_lead_days": 90,
             "order_size_range": [1, 6],
@@ -1113,6 +1214,7 @@ def run_generation(project_root: Path, *, seed: int = RANDOM_SEED) -> dict[str, 
         "limitations": [
             "The commercial records are synthetic and are not operator data.",
             "MCO passengers and TDT remittances are monthly market proxies, not attraction attendance or revenue.",
+            "Planned prices include seeded operational variation; downstream price analysis remains associational.",
             "Campaign lift is simulated and later analysis should describe associations rather than real-world causality.",
         ],
     }

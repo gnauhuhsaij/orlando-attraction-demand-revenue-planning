@@ -10,7 +10,10 @@ scikit-learn
 statsmodels
 openpyxl
 pypdf
+matplotlib
+torch
 
 # Development and validation
 pytest
 ruff
+ipykernel

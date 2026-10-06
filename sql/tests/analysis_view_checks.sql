@@ -154,6 +154,65 @@ FROM vw_daily_action_monitor
 WHERE NOT has_actuals
   AND demand_status <> 'awaiting_forecast';
 
+INSERT INTO analysis_view_failures
+SELECT
+    'duplicate_latest_forecast_date',
+    target_date::text,
+    'Latest production forecast contains more than one row for a target date'
+FROM vw_latest_demand_forecast
+GROUP BY target_date
+HAVING count(*) > 1;
+
+INSERT INTO analysis_view_failures
+WITH latest_run AS (
+    SELECT run_id
+    FROM fact_forecast
+    WHERE forecast_run_type = 'production'
+      AND model_role = 'selected'
+    ORDER BY created_at DESC, run_id DESC
+    LIMIT 1
+)
+SELECT
+    'latest_forecast_row_count',
+    latest_run.run_id,
+    'Latest forecast view does not expose every row in its selected run'
+FROM latest_run
+WHERE (
+    SELECT count(*)
+    FROM vw_latest_demand_forecast
+) <> (
+    SELECT count(*)
+    FROM fact_forecast
+    WHERE run_id = latest_run.run_id
+);
+
+INSERT INTO analysis_view_failures
+SELECT
+    'invalid_forecast_action_status',
+    target_date::text,
+    'Forecast action status is outside the documented decision set'
+FROM vw_forecast_action_monitor
+WHERE demand_status NOT IN (
+    'capacity_risk',
+    'high_demand',
+    'promotion_opportunity',
+    'on_plan'
+);
+
+INSERT INTO analysis_view_failures
+SELECT
+    'forecast_action_priority_mismatch',
+    target_date::text,
+    'Forecast action priority does not match its decision status'
+FROM vw_forecast_action_monitor
+WHERE action_priority <> CASE demand_status
+    WHEN 'capacity_risk' THEN
+        CASE WHEN predicted_demand >= available_capacity THEN 1 ELSE 2 END
+    WHEN 'high_demand' THEN 4
+    WHEN 'promotion_opportunity' THEN 5
+    ELSE 6
+END;
+
 SELECT
     check_name,
     count(*) AS failed_records

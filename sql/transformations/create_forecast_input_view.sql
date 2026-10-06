@@ -33,18 +33,8 @@ SELECT
     daily.precipitation_in AS observed_precipitation_in,
     daily.severe_weather_flag AS observed_severe_weather_flag,
 
-    -- Planned price known before the visit date.
-    ROUND(
-        1.00
-        + CASE WHEN daily.is_weekend THEN 0.06 ELSE 0 END
-        + CASE
-            WHEN daily.season = 'peak' THEN 0.08
-            WHEN daily.season = 'off_peak' THEN -0.05
-            ELSE 0
-          END
-        + CASE WHEN daily.holiday_flag THEN 0.04 ELSE 0 END,
-        4
-    ) AS planned_price_multiplier,
+    -- Final planned price known before the visit date.
+    daily.planned_price_multiplier,
 
     -- Campaign schedule known before the visit date.
     campaign.active_campaign_count,

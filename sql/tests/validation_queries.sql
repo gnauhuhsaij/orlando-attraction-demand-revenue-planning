@@ -163,6 +163,14 @@ FROM (
 LEFT JOIN fact_daily_plan AS p ON p.date_key = sales_dates.visit_date_key
 WHERE p.date_key IS NULL;
 
+INSERT INTO data_quality_failures
+SELECT
+    'invalid_planned_price',
+    date_key::text,
+    'Planned price multiplier is outside the documented operating range'
+FROM fact_daily_plan
+WHERE planned_price_multiplier NOT BETWEEN 0.85 AND 1.30;
+
 -- Forecast metadata, horizon, intervals, and actuals must be internally consistent.
 INSERT INTO data_quality_failures
 SELECT
@@ -184,6 +192,52 @@ SELECT
     'Prediction is not contained by its lower and upper bounds'
 FROM fact_forecast
 WHERE lower_bound > predicted_demand OR predicted_demand > upper_bound;
+
+INSERT INTO data_quality_failures
+SELECT
+    'incomplete_forecast_interval_metadata',
+    forecast_id::text,
+    'Interval bounds and calibration metadata must be populated together'
+FROM fact_forecast
+WHERE num_nonnulls(
+    lower_bound,
+    upper_bound,
+    interval_confidence,
+    interval_method,
+    calibration_observations
+) NOT IN (0, 5);
+
+INSERT INTO data_quality_failures
+SELECT
+    'production_forecast_without_interval',
+    forecast_id::text,
+    'Production forecasts require a calibrated uncertainty interval'
+FROM fact_forecast
+WHERE forecast_run_type = 'production'
+  AND lower_bound IS NULL;
+
+INSERT INTO data_quality_failures
+SELECT
+    'backtest_without_actual',
+    forecast_id::text,
+    'Backtest predictions require an out-of-sample actual value'
+FROM fact_forecast
+WHERE forecast_run_type = 'backtest'
+  AND actual_demand IS NULL;
+
+INSERT INTO data_quality_failures
+SELECT
+    'inconsistent_forecast_run',
+    run_id,
+    'A run_id contains inconsistent model or forecast-origin metadata'
+FROM fact_forecast
+GROUP BY run_id
+HAVING count(DISTINCT forecast_run_type) > 1
+    OR count(DISTINCT forecast_created_date_key) > 1
+    OR count(DISTINCT training_end_date_key) > 1
+    OR count(DISTINCT model_name) > 1
+    OR count(DISTINCT model_version) > 1
+    OR count(DISTINCT model_role) > 1;
 
 INSERT INTO data_quality_failures
 WITH latest_actual_date AS (

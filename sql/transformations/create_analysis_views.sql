@@ -7,6 +7,9 @@ SET LOCAL search_path TO analytics, public;
 
 -- Drop dependent views first so column-contract changes remain rerunnable.
 DROP VIEW IF EXISTS vw_forecast_input;
+DROP VIEW IF EXISTS vw_forecast_action_monitor;
+DROP VIEW IF EXISTS vw_latest_demand_forecast;
+DROP VIEW IF EXISTS vw_forecast_accuracy;
 DROP VIEW IF EXISTS vw_daily_action_monitor;
 DROP VIEW IF EXISTS vw_campaign_performance;
 DROP VIEW IF EXISTS vw_monthly_channel_product_performance;
@@ -77,6 +80,7 @@ SELECT
     weather.max_temperature_f,
     weather.precipitation_in,
     weather.severe_weather_flag,
+    plan.planned_price_multiplier,
     plan.available_capacity,
     plan.demand_target,
     plan.revenue_target,

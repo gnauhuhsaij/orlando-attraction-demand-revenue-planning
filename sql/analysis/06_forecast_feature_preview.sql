@@ -24,18 +24,8 @@ SELECT
     daily.avg_temperature_f AS observed_temperature_f,
     daily.precipitation_in AS observed_precipitation_in,
 
-    -- Planned price: known for both historical and future dates.
-    ROUND(
-        1.00
-        + CASE WHEN daily.is_weekend THEN 0.06 ELSE 0 END
-        + CASE
-            WHEN daily.season = 'peak' THEN 0.08
-            WHEN daily.season = 'off_peak' THEN -0.05
-            ELSE 0
-          END
-        + CASE WHEN daily.holiday_flag THEN 0.04 ELSE 0 END,
-        4
-    ) AS planned_price_multiplier,
+    -- Final planned price: known for both historical and future dates.
+    daily.planned_price_multiplier,
 
     -- Campaign schedule: known before the visit date.
     campaign.active_campaign_count,
