@@ -6,6 +6,7 @@ import pytest
 
 from src.generate_sales_data import (
     SyntheticDataError,
+    _product_probabilities,
     _weather_factor,
     build_campaign_daily,
     build_campaign_dimension,
@@ -17,6 +18,50 @@ from src.generate_sales_data import (
     generate_ticket_sales,
     validate_synthetic_outputs,
 )
+
+
+def test_product_mix_responds_to_operating_context() -> None:
+    base = _product_probabilities(
+        day_of_week=3,
+        holiday_flag=False,
+        school_break_flag=False,
+        season="shoulder",
+    )
+    school_break = _product_probabilities(
+        day_of_week=3,
+        holiday_flag=False,
+        school_break_flag=True,
+        season="peak",
+    )
+    weekend = _product_probabilities(
+        day_of_week=6,
+        holiday_flag=False,
+        school_break_flag=False,
+        season="shoulder",
+    )
+    onsite = _product_probabilities(
+        day_of_week=3,
+        holiday_flag=False,
+        school_break_flag=False,
+        season="shoulder",
+        channel_key=3,
+    )
+    bundle = _product_probabilities(
+        day_of_week=3,
+        holiday_flag=False,
+        school_break_flag=False,
+        season="shoulder",
+        campaign_type="bundle",
+    )
+
+    for probabilities in (base, school_break, weekend, onsite, bundle):
+        assert probabilities.sum() == pytest.approx(1.0)
+        assert (probabilities > 0).all()
+
+    assert school_break[1] > base[1]
+    assert weekend[2] > base[2]
+    assert onsite[3] > base[3]
+    assert bundle[1] > base[1]
 
 
 def _public_inputs_fixture() -> dict[str, pd.DataFrame]:

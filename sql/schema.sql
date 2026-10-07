@@ -306,6 +306,133 @@ CREATE TABLE IF NOT EXISTS fact_forecast (
         )
 );
 
+CREATE TABLE IF NOT EXISTS fact_revenue_forecast (
+    revenue_forecast_id  bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    run_id                varchar(64) NOT NULL,
+    forecast_run_type     varchar(15) NOT NULL,
+    forecast_created_date_key integer NOT NULL REFERENCES dim_date (date_key),
+    training_end_date_key integer NOT NULL REFERENCES dim_date (date_key),
+    target_date_key       integer NOT NULL REFERENCES dim_date (date_key),
+    revenue_model_name    varchar(120) NOT NULL,
+    model_version         varchar(40) NOT NULL,
+    model_role            varchar(15) NOT NULL
+                          CHECK (model_role IN ('baseline', 'challenger', 'selected')),
+    demand_model_name     varchar(80) NOT NULL,
+    product_mix_model_name varchar(80) NOT NULL,
+    product_yield_model_name varchar(80) NOT NULL,
+    forecast_horizon_days smallint NOT NULL
+                          CHECK (forecast_horizon_days BETWEEN 1 AND 365),
+    predicted_demand      numeric(12, 2) NOT NULL CHECK (predicted_demand >= 0),
+    predicted_net_revenue numeric(14, 2) NOT NULL
+                          CHECK (predicted_net_revenue >= 0),
+    lower_bound           numeric(14, 2) CHECK (lower_bound >= 0),
+    upper_bound           numeric(14, 2) CHECK (upper_bound >= 0),
+    interval_confidence   numeric(4, 3)
+                          CHECK (interval_confidence > 0 AND interval_confidence < 1),
+    interval_method       varchar(40),
+    calibration_observations integer,
+    actual_demand         integer CHECK (actual_demand >= 0),
+    actual_net_revenue    numeric(14, 2) CHECK (actual_net_revenue >= 0),
+    actual_loaded_at      timestamptz,
+    created_at            timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_fact_revenue_forecast_run_target
+        UNIQUE (run_id, target_date_key),
+    CONSTRAINT ck_fact_revenue_forecast_run_type
+        CHECK (forecast_run_type IN ('backtest', 'production')),
+    CONSTRAINT ck_fact_revenue_forecast_calibration
+        CHECK (calibration_observations >= 0),
+    CONSTRAINT ck_fact_revenue_forecast_date_order
+        CHECK (
+            training_end_date_key <= forecast_created_date_key
+            AND forecast_created_date_key < target_date_key
+        ),
+    CONSTRAINT ck_fact_revenue_forecast_bounds
+        CHECK (
+            (
+                lower_bound IS NULL
+                AND upper_bound IS NULL
+                AND interval_confidence IS NULL
+                AND interval_method IS NULL
+                AND calibration_observations IS NULL
+            )
+            OR (
+                lower_bound IS NOT NULL
+                AND upper_bound IS NOT NULL
+                AND interval_confidence IS NOT NULL
+                AND interval_method IS NOT NULL
+                AND calibration_observations IS NOT NULL
+                AND lower_bound <= predicted_net_revenue
+                AND predicted_net_revenue <= upper_bound
+            )
+        ),
+    CONSTRAINT ck_fact_revenue_forecast_actuals
+        CHECK (
+            (
+                actual_demand IS NULL
+                AND actual_net_revenue IS NULL
+                AND actual_loaded_at IS NULL
+            )
+            OR (
+                actual_demand IS NOT NULL
+                AND actual_net_revenue IS NOT NULL
+                AND actual_loaded_at IS NOT NULL
+            )
+        )
+);
+
+CREATE TABLE IF NOT EXISTS fact_product_revenue_forecast (
+    product_revenue_forecast_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    run_id                varchar(64) NOT NULL,
+    target_date_key       integer NOT NULL REFERENCES dim_date (date_key),
+    product_key           integer NOT NULL REFERENCES dim_product (product_key),
+    predicted_product_share numeric(12, 8) NOT NULL
+                          CHECK (
+                              predicted_product_share >= 0
+                              AND predicted_product_share <= 1
+                          ),
+    predicted_product_demand numeric(14, 4) NOT NULL
+                          CHECK (predicted_product_demand >= 0),
+    predicted_product_net_yield numeric(12, 4) NOT NULL
+                          CHECK (predicted_product_net_yield > 0),
+    predicted_product_net_revenue numeric(14, 2) NOT NULL
+                          CHECK (predicted_product_net_revenue >= 0),
+    actual_product_share  numeric(12, 8)
+                          CHECK (
+                              actual_product_share >= 0
+                              AND actual_product_share <= 1
+                          ),
+    actual_product_demand integer CHECK (actual_product_demand >= 0),
+    actual_product_net_yield numeric(12, 4)
+                          CHECK (actual_product_net_yield > 0),
+    actual_product_net_revenue numeric(14, 2)
+                          CHECK (actual_product_net_revenue >= 0),
+    actual_loaded_at      timestamptz,
+    created_at            timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_fact_product_revenue_forecast_run_target_product
+        UNIQUE (run_id, target_date_key, product_key),
+    CONSTRAINT fk_fact_product_revenue_forecast_daily
+        FOREIGN KEY (run_id, target_date_key)
+        REFERENCES fact_revenue_forecast (run_id, target_date_key)
+        ON DELETE CASCADE,
+    CONSTRAINT ck_fact_product_revenue_forecast_actuals
+        CHECK (
+            (
+                actual_product_share IS NULL
+                AND actual_product_demand IS NULL
+                AND actual_product_net_yield IS NULL
+                AND actual_product_net_revenue IS NULL
+                AND actual_loaded_at IS NULL
+            )
+            OR (
+                actual_product_share IS NOT NULL
+                AND actual_product_demand IS NOT NULL
+                AND actual_product_net_yield IS NOT NULL
+                AND actual_product_net_revenue IS NOT NULL
+                AND actual_loaded_at IS NOT NULL
+            )
+        )
+);
+
 -- Keep pre-forecast local databases compatible when this schema is reapplied.
 ALTER TABLE fact_forecast
     ADD COLUMN IF NOT EXISTS forecast_run_type varchar(15)
@@ -383,6 +510,12 @@ CREATE INDEX IF NOT EXISTS ix_fact_forecast_model
     ON fact_forecast (model_name, model_version);
 CREATE INDEX IF NOT EXISTS ix_fact_forecast_run_type_created
     ON fact_forecast (forecast_run_type, created_at DESC);
+CREATE INDEX IF NOT EXISTS ix_fact_revenue_forecast_target_date
+    ON fact_revenue_forecast (target_date_key);
+CREATE INDEX IF NOT EXISTS ix_fact_revenue_forecast_run_type_created
+    ON fact_revenue_forecast (forecast_run_type, created_at DESC);
+CREATE INDEX IF NOT EXISTS ix_fact_product_revenue_forecast_target
+    ON fact_product_revenue_forecast (target_date_key, product_key);
 
 COMMENT ON SCHEMA analytics IS
     'Analytical star schema for the Orlando attraction planning portfolio project.';
@@ -411,5 +544,11 @@ COMMENT ON COLUMN fact_forecast.forecast_run_type IS
     'Separates historical out-of-sample backtests from live production-horizon forecasts.';
 COMMENT ON COLUMN fact_forecast.actual_demand IS
     'Observed net ticket demand by visit date, populated only when that target is available.';
+COMMENT ON TABLE fact_revenue_forecast IS
+    'One row per final revenue model run and target date, retaining backtests and production forecasts.';
+COMMENT ON TABLE fact_product_revenue_forecast IS
+    'Product-level demand share, net yield, and revenue components for each retained revenue forecast.';
+COMMENT ON COLUMN fact_revenue_forecast.actual_net_revenue IS
+    'Observed net revenue by visit date, populated only when the target date has actuals.';
 
 COMMIT;

@@ -550,6 +550,11 @@ def build_demand_drivers(
     output_columns = [
         "date_key",
         "calendar_date",
+        "day_of_week",
+        "is_weekend",
+        "holiday_flag",
+        "school_break_flag",
+        "season",
         "baseline_demand",
         *factor_columns,
         "mco_index",
@@ -576,6 +581,95 @@ def _channel_probabilities(year: int) -> np.ndarray:
     base[2] -= 0.01 * years_after_2023
     base[3] -= 0.005 * years_after_2023
     return base / base.sum()
+
+
+# Purpose: Create a context-sensitive product mix while preserving all products.
+# Used by: generate_ticket_sales and build_daily_plan.
+def _product_probabilities(
+    day_of_week: int,
+    holiday_flag: bool,
+    school_break_flag: bool,
+    season: str,
+    channel_key: int | None = None,
+    campaign_type: str = "none",
+    product_specs: tuple[ProductSpec, ...] = PRODUCT_SPECS,
+) -> np.ndarray:
+    weights = np.array(
+        [product.selection_weight for product in product_specs], dtype=float
+    )
+    context_factors = {
+        product.product_code: 1.0 for product in product_specs
+    }
+
+    if school_break_flag:
+        context_factors["ADULT_DAY"] *= 0.90
+        context_factors["CHILD_DAY"] *= 1.45
+        context_factors["FLEX_DAY"] *= 1.02
+        context_factors["EVENING"] *= 0.72
+
+    if day_of_week >= 6:
+        context_factors["ADULT_DAY"] *= 0.96
+        context_factors["CHILD_DAY"] *= 1.04
+        context_factors["FLEX_DAY"] *= 1.28
+        context_factors["EVENING"] *= 0.72
+    elif day_of_week <= 4:
+        context_factors["EVENING"] *= 1.25
+
+    if holiday_flag:
+        context_factors["ADULT_DAY"] *= 0.94
+        context_factors["CHILD_DAY"] *= 1.12
+        context_factors["FLEX_DAY"] *= 1.32
+        context_factors["EVENING"] *= 0.72
+
+    if season == "peak":
+        context_factors["CHILD_DAY"] *= 1.08
+        context_factors["FLEX_DAY"] *= 1.10
+    elif season == "off_peak":
+        context_factors["CHILD_DAY"] *= 0.90
+        context_factors["FLEX_DAY"] *= 0.92
+        context_factors["EVENING"] *= 1.30
+
+    if channel_key == 2:
+        context_factors["FLEX_DAY"] *= 1.18
+    elif channel_key == 3:
+        context_factors["ADULT_DAY"] *= 0.94
+        context_factors["CHILD_DAY"] *= 0.90
+        context_factors["FLEX_DAY"] *= 0.90
+        context_factors["EVENING"] *= 1.75
+    elif channel_key == 4:
+        context_factors["FLEX_DAY"] *= 1.30
+        context_factors["EVENING"] *= 0.85
+    elif channel_key == 5:
+        context_factors["ADULT_DAY"] *= 1.08
+        context_factors["CHILD_DAY"] *= 1.28
+        context_factors["FLEX_DAY"] *= 0.75
+        context_factors["EVENING"] *= 0.65
+
+    if campaign_type == "paid_media":
+        context_factors["CHILD_DAY"] *= 1.10
+        context_factors["FLEX_DAY"] *= 1.20
+    elif campaign_type == "bundle":
+        context_factors["ADULT_DAY"] *= 1.08
+        context_factors["CHILD_DAY"] *= 1.50
+        context_factors["EVENING"] *= 0.65
+    elif campaign_type == "email":
+        context_factors["ADULT_DAY"] *= 1.08
+        context_factors["EVENING"] *= 1.25
+    elif campaign_type == "partnership":
+        context_factors["ADULT_DAY"] *= 1.10
+        context_factors["CHILD_DAY"] *= 1.15
+    elif campaign_type == "discount":
+        context_factors["CHILD_DAY"] *= 1.10
+        context_factors["EVENING"] *= 1.20
+
+    factors = np.array(
+        [context_factors[product.product_code] for product in product_specs],
+        dtype=float,
+    )
+    adjusted = weights * factors
+    if (adjusted <= 0).any() or not np.isfinite(adjusted).all():
+        raise SyntheticDataError("Product probabilities are invalid")
+    return adjusted / adjusted.sum()
 
 
 # Purpose: Sample a 1-to-6 ticket order without exceeding remaining daily units.
@@ -717,10 +811,6 @@ def generate_ticket_sales(
     channel_specs: tuple[ChannelSpec, ...] = CHANNEL_SPECS,
     campaign_specs: tuple[CampaignSpec, ...] = CAMPAIGN_SPECS,
 ) -> pd.DataFrame:
-    product_weights = np.array(
-        [product.selection_weight for product in product_specs], dtype=float
-    )
-    product_weights /= product_weights.sum()
     all_records: list[dict[str, Any]] = []
     order_sequence = 1
 
@@ -735,14 +825,23 @@ def generate_ticket_sales(
                 int(rng.choice(len(channel_specs), p=channel_weights))
             ]
             units_sold = _order_size(channel.channel_key, remaining_units, rng)
-            product = product_specs[
-                int(rng.choice(len(product_specs), p=product_weights))
-            ]
             lead_days = _lead_days(channel.channel_key, rng)
             purchase_date = max(
                 EARLIEST_PURCHASE_DATE, visit_date - timedelta(days=lead_days)
             )
             campaign = _select_campaign(purchase_date, campaign_specs, rng)
+            product_weights = _product_probabilities(
+                day_of_week=int(driver.day_of_week),
+                holiday_flag=bool(driver.holiday_flag),
+                school_break_flag=bool(driver.school_break_flag),
+                season=str(driver.season),
+                channel_key=channel.channel_key,
+                campaign_type=campaign.campaign_type,
+                product_specs=product_specs,
+            )
+            product = product_specs[
+                int(rng.choice(len(product_specs), p=product_weights))
+            ]
             unit_list_price = round(product.base_price * driver.price_multiplier, 2)
             gross_revenue = round(units_sold * unit_list_price, 2)
             discount_amount = _discount_amount(gross_revenue, units_sold, campaign)
@@ -870,13 +969,25 @@ def build_daily_plan(
     )
     if dates["planned_price_multiplier"].isna().any():
         raise SyntheticDataError("Price plan is missing for at least one plan date")
-    weighted_base_price = sum(
-        product.base_price * product.selection_weight for product in PRODUCT_SPECS
-    )
     records = []
     for row in dates.itertuples(index=False):
         capacity = _available_capacity(row)
         price_multiplier = float(row.planned_price_multiplier)
+        planned_product_mix = _product_probabilities(
+            day_of_week=int(row.day_of_week),
+            holiday_flag=bool(row.holiday_flag),
+            school_break_flag=bool(row.school_break_flag),
+            season=str(row.season),
+        )
+        weighted_base_price = float(
+            np.dot(
+                planned_product_mix,
+                np.array(
+                    [product.base_price for product in PRODUCT_SPECS],
+                    dtype=float,
+                ),
+            )
+        )
         demand_target = round(
             BASE_DAILY_DEMAND
             * DAY_OF_WEEK_FACTORS[row.day_of_week]
@@ -899,7 +1010,7 @@ def build_daily_plan(
                 "demand_target": demand_target,
                 "revenue_target": revenue_target,
                 "planned_staff_hours": planned_staff_hours,
-                "plan_version": "initial_plan_v1",
+                "plan_version": "initial_plan_v2_product_mix",
             }
         )
     return pd.DataFrame.from_records(records)
@@ -1188,6 +1299,14 @@ def run_generation(project_root: Path, *, seed: int = RANDOM_SEED) -> dict[str, 
             "expected_refund_rate": EXPECTED_REFUND_RATE,
             "maximum_booking_lead_days": 90,
             "order_size_range": [1, 6],
+            "product_mix_drivers": [
+                "day of week",
+                "season",
+                "federal holiday",
+                "OCPS school break",
+                "sales channel",
+                "attributed campaign type",
+            ],
             "demand_drivers": [
                 "day of week",
                 "season",

@@ -50,6 +50,24 @@ FROM fact_forecast
 GROUP BY run_id, target_date_key
 HAVING count(*) > 1;
 
+INSERT INTO data_quality_failures
+SELECT
+    'duplicate_revenue_forecast_target',
+    run_id || ':' || target_date_key,
+    'A revenue model run contains duplicate target dates'
+FROM fact_revenue_forecast
+GROUP BY run_id, target_date_key
+HAVING count(*) > 1;
+
+INSERT INTO data_quality_failures
+SELECT
+    'duplicate_product_revenue_forecast_target',
+    run_id || ':' || target_date_key || ':' || product_key,
+    'A product revenue run contains duplicate target-product rows'
+FROM fact_product_revenue_forecast
+GROUP BY run_id, target_date_key, product_key
+HAVING count(*) > 1;
+
 -- Financial measures must reconcile exactly at the order-line level.
 INSERT INTO data_quality_failures
 SELECT
@@ -269,6 +287,133 @@ FROM fact_forecast AS f
 JOIN daily_actuals AS a ON a.date_key = f.target_date_key
 WHERE f.actual_demand IS NOT NULL
   AND f.actual_demand <> a.actual_demand;
+
+-- Final revenue forecasts must retain the same temporal, interval, actual,
+-- and cross-grain reconciliation guarantees as total-demand forecasts.
+INSERT INTO data_quality_failures
+SELECT
+    'incorrect_revenue_forecast_horizon',
+    forecast.revenue_forecast_id::text,
+    'Stored revenue horizon does not match created and target dates'
+FROM fact_revenue_forecast AS forecast
+JOIN dim_date AS created_date
+    ON created_date.date_key = forecast.forecast_created_date_key
+JOIN dim_date AS target_date
+    ON target_date.date_key = forecast.target_date_key
+WHERE target_date.calendar_date - created_date.calendar_date
+      <> forecast.forecast_horizon_days;
+
+INSERT INTO data_quality_failures
+SELECT
+    'invalid_revenue_forecast_interval',
+    revenue_forecast_id::text,
+    'Revenue prediction is not contained by its interval'
+FROM fact_revenue_forecast
+WHERE lower_bound > predicted_net_revenue
+   OR predicted_net_revenue > upper_bound;
+
+INSERT INTO data_quality_failures
+SELECT
+    'incomplete_revenue_interval_metadata',
+    revenue_forecast_id::text,
+    'Revenue interval bounds and calibration metadata must be populated together'
+FROM fact_revenue_forecast
+WHERE num_nonnulls(
+    lower_bound,
+    upper_bound,
+    interval_confidence,
+    interval_method,
+    calibration_observations
+) NOT IN (0, 5);
+
+INSERT INTO data_quality_failures
+SELECT
+    'production_revenue_without_interval',
+    revenue_forecast_id::text,
+    'Production revenue forecasts require a calibrated interval'
+FROM fact_revenue_forecast
+WHERE forecast_run_type = 'production'
+  AND lower_bound IS NULL;
+
+INSERT INTO data_quality_failures
+SELECT
+    'backtest_revenue_without_actual',
+    revenue_forecast_id::text,
+    'Revenue backtests require demand and revenue actuals'
+FROM fact_revenue_forecast
+WHERE forecast_run_type = 'backtest'
+  AND (actual_demand IS NULL OR actual_net_revenue IS NULL);
+
+INSERT INTO data_quality_failures
+SELECT
+    'inconsistent_revenue_forecast_run',
+    run_id,
+    'A revenue run_id contains inconsistent model or origin metadata'
+FROM fact_revenue_forecast
+GROUP BY run_id
+HAVING count(DISTINCT forecast_run_type) > 1
+    OR count(DISTINCT forecast_created_date_key) > 1
+    OR count(DISTINCT training_end_date_key) > 1
+    OR count(DISTINCT revenue_model_name) > 1
+    OR count(DISTINCT model_version) > 1
+    OR count(DISTINCT demand_model_name) > 1
+    OR count(DISTINCT product_mix_model_name) > 1
+    OR count(DISTINCT product_yield_model_name) > 1;
+
+INSERT INTO data_quality_failures
+WITH daily_actuals AS (
+    SELECT
+        visit_date_key AS date_key,
+        sum(net_units)::integer AS actual_demand,
+        sum(net_revenue)::numeric(14, 2) AS actual_net_revenue
+    FROM fact_ticket_sales
+    GROUP BY visit_date_key
+)
+SELECT
+    'revenue_forecast_actual_mismatch',
+    forecast.revenue_forecast_id::text,
+    'Stored revenue actuals do not match ticket facts'
+FROM fact_revenue_forecast AS forecast
+JOIN daily_actuals AS actuals
+    ON actuals.date_key = forecast.target_date_key
+WHERE forecast.actual_demand IS NOT NULL
+  AND (
+      forecast.actual_demand <> actuals.actual_demand
+      OR forecast.actual_net_revenue <> actuals.actual_net_revenue
+  );
+
+INSERT INTO data_quality_failures
+WITH product_rollup AS (
+    SELECT
+        run_id,
+        target_date_key,
+        count(*)::integer AS product_rows,
+        sum(predicted_product_share) AS predicted_share,
+        sum(predicted_product_demand) AS predicted_demand,
+        sum(predicted_product_net_revenue) AS predicted_net_revenue,
+        sum(actual_product_demand) AS actual_demand,
+        sum(actual_product_net_revenue) AS actual_net_revenue
+    FROM fact_product_revenue_forecast
+    GROUP BY run_id, target_date_key
+)
+SELECT
+    'product_revenue_forecast_reconciliation',
+    daily.run_id || ':' || daily.target_date_key,
+    'Product shares, demand, or revenue do not reconcile to the daily forecast'
+FROM fact_revenue_forecast AS daily
+JOIN product_rollup AS product
+    USING (run_id, target_date_key)
+WHERE product.product_rows <> (SELECT count(*) FROM dim_product)
+   OR abs(product.predicted_share - 1) > 0.000001
+   OR abs(product.predicted_demand - daily.predicted_demand) > 0.02
+   OR abs(product.predicted_net_revenue - daily.predicted_net_revenue) > 0.05
+   OR (
+       daily.actual_demand IS NOT NULL
+       AND (
+           product.actual_demand <> daily.actual_demand
+           OR product.actual_net_revenue <> daily.actual_net_revenue
+       )
+   );
 
 -- The synthetic model requires exactly one explicit fallback campaign member.
 INSERT INTO data_quality_failures

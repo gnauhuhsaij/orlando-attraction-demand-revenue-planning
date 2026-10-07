@@ -49,6 +49,39 @@ WITH daily_totals AS (
         sum(net_revenue)::numeric(20, 2) AS net_revenue
     FROM vw_daily_performance
     WHERE has_actuals
+), product_totals AS (
+    SELECT
+        sum(net_demand)::bigint AS net_demand,
+        sum(net_revenue)::numeric(20, 2) AS net_revenue
+    FROM vw_daily_product_performance
+    WHERE has_actuals
+)
+SELECT
+    'daily_product_reconciliation',
+    'all_actual_dates',
+    'Daily product demand or revenue does not reconcile to daily totals'
+FROM daily_totals
+CROSS JOIN product_totals
+WHERE daily_totals.net_demand <> product_totals.net_demand
+   OR daily_totals.net_revenue <> product_totals.net_revenue;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'daily_product_share_reconciliation',
+    calendar_date::text,
+    'Historical product demand shares do not sum to one'
+FROM vw_daily_product_performance
+WHERE has_actuals
+GROUP BY calendar_date
+HAVING abs(sum(actual_product_demand_share) - 1) > 0.00001;
+
+INSERT INTO analysis_view_failures
+WITH daily_totals AS (
+    SELECT
+        sum(net_demand)::bigint AS net_demand,
+        sum(net_revenue)::numeric(20, 2) AS net_revenue
+    FROM vw_daily_performance
+    WHERE has_actuals
 ), weekly_totals AS (
     SELECT
         sum(net_demand)::bigint AS net_demand,
@@ -212,6 +245,72 @@ WHERE action_priority <> CASE demand_status
     WHEN 'promotion_opportunity' THEN 5
     ELSE 6
 END;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'duplicate_latest_revenue_forecast_date',
+    target_date::text,
+    'Latest revenue forecast contains more than one row for a target date'
+FROM vw_latest_revenue_forecast
+GROUP BY target_date
+HAVING count(*) > 1;
+
+INSERT INTO analysis_view_failures
+WITH latest_run AS (
+    SELECT run_id
+    FROM fact_revenue_forecast
+    WHERE forecast_run_type = 'production'
+      AND model_role = 'selected'
+    ORDER BY created_at DESC, run_id DESC
+    LIMIT 1
+)
+SELECT
+    'latest_revenue_forecast_row_count',
+    latest_run.run_id,
+    'Latest revenue view does not expose every row in its selected run'
+FROM latest_run
+WHERE (
+    SELECT count(*) FROM vw_latest_revenue_forecast
+) <> (
+    SELECT count(*)
+    FROM fact_revenue_forecast
+    WHERE run_id = latest_run.run_id
+);
+
+INSERT INTO analysis_view_failures
+WITH latest_run AS (
+    SELECT run_id
+    FROM fact_revenue_forecast
+    WHERE forecast_run_type = 'production'
+      AND model_role = 'selected'
+    ORDER BY created_at DESC, run_id DESC
+    LIMIT 1
+), expected AS (
+    SELECT
+        latest_run.run_id,
+        count(*)::integer AS expected_rows
+    FROM latest_run
+    JOIN fact_revenue_forecast AS daily USING (run_id)
+    CROSS JOIN dim_product
+    GROUP BY latest_run.run_id
+)
+SELECT
+    'latest_product_revenue_forecast_row_count',
+    expected.run_id,
+    'Latest product view does not contain one row per target and product'
+FROM expected
+WHERE (
+    SELECT count(*) FROM vw_latest_product_revenue_forecast
+) <> expected.expected_rows;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'latest_revenue_demand_mismatch',
+    revenue.target_date::text,
+    'Revenue and selected demand forecasts disagree on predicted demand'
+FROM vw_latest_revenue_forecast AS revenue
+JOIN vw_latest_demand_forecast AS demand USING (target_date)
+WHERE revenue.predicted_demand <> demand.predicted_demand;
 
 SELECT
     check_name,

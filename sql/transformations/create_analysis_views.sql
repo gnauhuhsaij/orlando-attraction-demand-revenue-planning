@@ -6,14 +6,18 @@ BEGIN;
 SET LOCAL search_path TO analytics, public;
 
 -- Drop dependent views first so column-contract changes remain rerunnable.
-DROP VIEW IF EXISTS vw_forecast_input;
+DROP VIEW IF EXISTS vw_latest_product_revenue_forecast;
+DROP VIEW IF EXISTS vw_latest_revenue_forecast;
+DROP VIEW IF EXISTS vw_revenue_forecast_accuracy;
 DROP VIEW IF EXISTS vw_forecast_action_monitor;
 DROP VIEW IF EXISTS vw_latest_demand_forecast;
 DROP VIEW IF EXISTS vw_forecast_accuracy;
+DROP VIEW IF EXISTS vw_forecast_input;
 DROP VIEW IF EXISTS vw_daily_action_monitor;
 DROP VIEW IF EXISTS vw_campaign_performance;
 DROP VIEW IF EXISTS vw_monthly_channel_product_performance;
 DROP VIEW IF EXISTS vw_weekly_performance;
+DROP VIEW IF EXISTS vw_daily_product_performance;
 DROP VIEW IF EXISTS vw_daily_performance;
 
 -- One row per visit date. Future plan dates remain present with null actuals.
@@ -111,6 +115,76 @@ LEFT JOIN sales_by_visit AS sales USING (date_key)
 LEFT JOIN fact_weather AS weather USING (date_key)
 LEFT JOIN fact_daily_plan AS plan USING (date_key)
 WHERE plan.date_key IS NOT NULL OR sales.date_key IS NOT NULL;
+
+-- One row per visit date and product. Future rows retain planned price context
+-- while actual product demand and revenue remain null.
+CREATE VIEW vw_daily_product_performance AS
+WITH sales_by_visit_product AS (
+    SELECT
+        visit_date_key AS date_key,
+        product_key,
+        sum(units_sold)::integer AS units_sold,
+        sum(units_refunded)::integer AS units_refunded,
+        sum(net_units)::integer AS net_demand,
+        sum(gross_revenue)::numeric(14, 2) AS gross_revenue,
+        sum(discount_amount)::numeric(14, 2) AS discount_amount,
+        sum(refund_amount)::numeric(14, 2) AS refund_amount,
+        sum(net_revenue)::numeric(14, 2) AS net_revenue
+    FROM fact_ticket_sales
+    GROUP BY visit_date_key, product_key
+)
+SELECT
+    daily.date_key,
+    daily.calendar_date,
+    daily.day_of_week,
+    daily.month_number,
+    daily.year_number,
+    daily.is_weekend,
+    daily.holiday_flag,
+    daily.school_break_flag,
+    daily.season,
+    daily.has_actuals,
+    product.product_key,
+    product.product_code,
+    product.product_name,
+    product.ticket_tier,
+    product.base_price,
+    daily.planned_price_multiplier,
+    round(product.base_price * daily.planned_price_multiplier, 2)
+        AS planned_unit_list_price,
+    CASE WHEN daily.has_actuals THEN COALESCE(sales.units_sold, 0) END
+        AS units_sold,
+    CASE WHEN daily.has_actuals THEN COALESCE(sales.units_refunded, 0) END
+        AS units_refunded,
+    CASE WHEN daily.has_actuals THEN COALESCE(sales.net_demand, 0) END
+        AS net_demand,
+    CASE WHEN daily.has_actuals THEN COALESCE(sales.gross_revenue, 0) END
+        AS gross_revenue,
+    CASE WHEN daily.has_actuals THEN COALESCE(sales.discount_amount, 0) END
+        AS discount_amount,
+    CASE WHEN daily.has_actuals THEN COALESCE(sales.refund_amount, 0) END
+        AS refund_amount,
+    CASE WHEN daily.has_actuals THEN COALESCE(sales.net_revenue, 0) END
+        AS net_revenue,
+    CASE
+        WHEN daily.has_actuals THEN round(
+            COALESCE(sales.net_demand, 0)::numeric
+            / NULLIF(daily.net_demand, 0),
+            6
+        )
+    END AS actual_product_demand_share,
+    CASE
+        WHEN daily.has_actuals THEN round(
+            COALESCE(sales.net_revenue, 0)
+            / NULLIF(sales.net_demand, 0),
+            2
+        )
+    END AS actual_net_revenue_per_ticket
+FROM vw_daily_performance AS daily
+CROSS JOIN dim_product AS product
+LEFT JOIN sales_by_visit_product AS sales
+    ON sales.date_key = daily.date_key
+   AND sales.product_key = product.product_key;
 
 -- One row per Monday-starting week with LAG and rolling metrics.
 CREATE VIEW vw_weekly_performance AS
@@ -544,6 +618,8 @@ FROM vw_daily_performance AS daily;
 
 COMMENT ON VIEW vw_daily_performance IS
     'Daily visit-date actuals, weather, capacity, and target performance; future actuals remain null.';
+COMMENT ON VIEW vw_daily_product_performance IS
+    'Daily product demand, revenue, realized mix, and planned price context including future plan dates.';
 COMMENT ON VIEW vw_weekly_performance IS
     'Weekly demand and revenue metrics with LAG-based comparisons and four-week rolling averages.';
 COMMENT ON VIEW vw_monthly_channel_product_performance IS

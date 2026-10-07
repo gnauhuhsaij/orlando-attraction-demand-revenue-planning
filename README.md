@@ -33,8 +33,7 @@ Core tools: PostgreSQL, SQL, Python, Tableau, Excel, and GitHub Actions.
 
 - Reproducible data-generation and ETL pipeline
 - SQL schema, validation tests, and business analysis queries
-- Versioned 30-day demand forecast with uncertainty ranges
+- Versioned 30-day demand and product-level revenue forecasts with uncertainty ranges
 - Daily pricing, marketing, and operating action table
 - Tableau decision dashboard and Excel planning workbook
 - Executive recommendation memo and technical documentation
-

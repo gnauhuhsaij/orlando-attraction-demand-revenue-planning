@@ -189,6 +189,8 @@ LOAD_SPECS = (
 )
 
 REFRESH_TABLES = (
+    "fact_product_revenue_forecast",
+    "fact_revenue_forecast",
     "fact_forecast",
     "fact_ticket_sales",
     "fact_campaign_daily",
@@ -210,6 +212,7 @@ TRANSFORMATION_SCRIPTS = (
     "sql/transformations/create_analysis_views.sql",
     "sql/transformations/create_forecast_input_view.sql",
     "sql/transformations/create_forecast_views.sql",
+    "sql/transformations/create_revenue_forecast_views.sql",
 )
 
 VALIDATION_SCRIPTS = (
