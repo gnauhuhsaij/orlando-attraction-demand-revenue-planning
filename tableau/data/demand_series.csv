@@ -1,0 +1,151 @@
+target_date,forecast_date,forecast_horizon_days,series_name,series_order,tickets,series_scope
+2026-01-01,Jan 1,1,Forecast,1,1591.950000,Planning
+2026-01-01,Jan 1,1,Low estimate,2,1390.520000,Uncertainty
+2026-01-01,Jan 1,1,High estimate,3,1793.390000,Uncertainty
+2026-01-01,Jan 1,1,Demand plan,4,1571.000000,Planning
+2026-01-01,Jan 1,1,Capacity,5,2500.000000,Planning
+2026-01-02,Jan 2,2,Forecast,1,1572.140000,Planning
+2026-01-02,Jan 2,2,Low estimate,2,1370.700000,Uncertainty
+2026-01-02,Jan 2,2,High estimate,3,1773.570000,Uncertainty
+2026-01-02,Jan 2,2,Demand plan,4,1658.000000,Planning
+2026-01-02,Jan 2,2,Capacity,5,2500.000000,Planning
+2026-01-03,Jan 3,3,Forecast,1,1750.000000,Planning
+2026-01-03,Jan 3,3,Low estimate,2,1548.570000,Uncertainty
+2026-01-03,Jan 3,3,High estimate,3,1951.440000,Uncertainty
+2026-01-03,Jan 3,3,Demand plan,4,1712.000000,Planning
+2026-01-03,Jan 3,3,Capacity,5,2500.000000,Planning
+2026-01-04,Jan 4,4,Forecast,1,1515.340000,Planning
+2026-01-04,Jan 4,4,Low estimate,2,1313.900000,Uncertainty
+2026-01-04,Jan 4,4,High estimate,3,1716.770000,Uncertainty
+2026-01-04,Jan 4,4,Demand plan,4,1448.000000,Planning
+2026-01-04,Jan 4,4,Capacity,5,2500.000000,Planning
+2026-01-05,Jan 5,5,Forecast,1,1004.060000,Planning
+2026-01-05,Jan 5,5,Low estimate,2,802.630000,Uncertainty
+2026-01-05,Jan 5,5,High estimate,3,1205.500000,Uncertainty
+2026-01-05,Jan 5,5,Demand plan,4,1024.000000,Planning
+2026-01-05,Jan 5,5,Capacity,5,2350.000000,Planning
+2026-01-06,Jan 6,6,Forecast,1,949.740000,Planning
+2026-01-06,Jan 6,6,Low estimate,2,748.300000,Uncertainty
+2026-01-06,Jan 6,6,High estimate,3,1151.170000,Uncertainty
+2026-01-06,Jan 6,6,Demand plan,4,990.000000,Planning
+2026-01-06,Jan 6,6,Capacity,5,2350.000000,Planning
+2026-01-07,Jan 7,7,Forecast,1,958.930000,Planning
+2026-01-07,Jan 7,7,Low estimate,2,757.500000,Uncertainty
+2026-01-07,Jan 7,7,High estimate,3,1160.360000,Uncertainty
+2026-01-07,Jan 7,7,Demand plan,4,985.000000,Planning
+2026-01-07,Jan 7,7,Capacity,5,2350.000000,Planning
+2026-01-08,Jan 8,8,Forecast,1,1102.720000,Planning
+2026-01-08,Jan 8,8,Low estimate,2,965.890000,Uncertainty
+2026-01-08,Jan 8,8,High estimate,3,1239.550000,Uncertainty
+2026-01-08,Jan 8,8,Demand plan,4,1120.000000,Planning
+2026-01-08,Jan 8,8,Capacity,5,2350.000000,Planning
+2026-01-09,Jan 9,9,Forecast,1,1323.020000,Planning
+2026-01-09,Jan 9,9,Low estimate,2,1186.180000,Uncertainty
+2026-01-09,Jan 9,9,High estimate,3,1459.850000,Uncertainty
+2026-01-09,Jan 9,9,Demand plan,4,1333.000000,Planning
+2026-01-09,Jan 9,9,Capacity,5,2350.000000,Planning
+2026-01-10,Jan 10,10,Forecast,1,1773.200000,Planning
+2026-01-10,Jan 10,10,Low estimate,2,1636.360000,Uncertainty
+2026-01-10,Jan 10,10,High estimate,3,1910.030000,Uncertainty
+2026-01-10,Jan 10,10,Demand plan,4,1737.000000,Planning
+2026-01-10,Jan 10,10,Capacity,5,2500.000000,Planning
+2026-01-11,Jan 11,11,Forecast,1,1555.780000,Planning
+2026-01-11,Jan 11,11,Low estimate,2,1418.940000,Uncertainty
+2026-01-11,Jan 11,11,High estimate,3,1692.610000,Uncertainty
+2026-01-11,Jan 11,11,Demand plan,4,1532.000000,Planning
+2026-01-11,Jan 11,11,Capacity,5,2500.000000,Planning
+2026-01-12,Jan 12,12,Forecast,1,988.550000,Planning
+2026-01-12,Jan 12,12,Low estimate,2,851.720000,Uncertainty
+2026-01-12,Jan 12,12,High estimate,3,1125.380000,Uncertainty
+2026-01-12,Jan 12,12,Demand plan,4,1009.000000,Planning
+2026-01-12,Jan 12,12,Capacity,5,2350.000000,Planning
+2026-01-13,Jan 13,13,Forecast,1,947.230000,Planning
+2026-01-13,Jan 13,13,Low estimate,2,810.390000,Uncertainty
+2026-01-13,Jan 13,13,High estimate,3,1084.060000,Uncertainty
+2026-01-13,Jan 13,13,Demand plan,4,976.000000,Planning
+2026-01-13,Jan 13,13,Capacity,5,2350.000000,Planning
+2026-01-14,Jan 14,14,Forecast,1,996.800000,Planning
+2026-01-14,Jan 14,14,Low estimate,2,859.960000,Uncertainty
+2026-01-14,Jan 14,14,High estimate,3,1133.630000,Uncertainty
+2026-01-14,Jan 14,14,Demand plan,4,1019.000000,Planning
+2026-01-14,Jan 14,14,Capacity,5,2350.000000,Planning
+2026-01-15,Jan 15,15,Forecast,1,1059.570000,Planning
+2026-01-15,Jan 15,15,Low estimate,2,875.950000,Uncertainty
+2026-01-15,Jan 15,15,High estimate,3,1243.200000,Uncertainty
+2026-01-15,Jan 15,15,Demand plan,4,1062.000000,Planning
+2026-01-15,Jan 15,15,Capacity,5,2350.000000,Planning
+2026-01-16,Jan 16,16,Forecast,1,1264.780000,Planning
+2026-01-16,Jan 16,16,Low estimate,2,1081.150000,Uncertainty
+2026-01-16,Jan 16,16,High estimate,3,1448.400000,Uncertainty
+2026-01-16,Jan 16,16,Demand plan,4,1240.000000,Planning
+2026-01-16,Jan 16,16,Capacity,5,2350.000000,Planning
+2026-01-17,Jan 17,17,Forecast,1,1790.500000,Planning
+2026-01-17,Jan 17,17,Low estimate,2,1606.880000,Uncertainty
+2026-01-17,Jan 17,17,High estimate,3,1974.130000,Uncertainty
+2026-01-17,Jan 17,17,Demand plan,4,1771.000000,Planning
+2026-01-17,Jan 17,17,Capacity,5,2500.000000,Planning
+2026-01-18,Jan 18,18,Forecast,1,1564.070000,Planning
+2026-01-18,Jan 18,18,Low estimate,2,1380.450000,Uncertainty
+2026-01-18,Jan 18,18,High estimate,3,1747.700000,Uncertainty
+2026-01-18,Jan 18,18,Demand plan,4,1548.000000,Planning
+2026-01-18,Jan 18,18,Capacity,5,2500.000000,Planning
+2026-01-19,Jan 19,19,Forecast,1,1074.920000,Planning
+2026-01-19,Jan 19,19,Low estimate,2,891.300000,Uncertainty
+2026-01-19,Jan 19,19,High estimate,3,1258.550000,Uncertainty
+2026-01-19,Jan 19,19,Demand plan,4,1183.000000,Planning
+2026-01-19,Jan 19,19,Capacity,5,2500.000000,Planning
+2026-01-20,Jan 20,20,Forecast,1,959.200000,Planning
+2026-01-20,Jan 20,20,Low estimate,2,775.580000,Uncertainty
+2026-01-20,Jan 20,20,High estimate,3,1142.830000,Uncertainty
+2026-01-20,Jan 20,20,Demand plan,4,989.000000,Planning
+2026-01-20,Jan 20,20,Capacity,5,2350.000000,Planning
+2026-01-21,Jan 21,21,Forecast,1,964.350000,Planning
+2026-01-21,Jan 21,21,Low estimate,2,780.730000,Uncertainty
+2026-01-21,Jan 21,21,High estimate,3,1147.980000,Uncertainty
+2026-01-21,Jan 21,21,Demand plan,4,976.000000,Planning
+2026-01-21,Jan 21,21,Capacity,5,2350.000000,Planning
+2026-01-22,Jan 22,22,Forecast,1,1076.910000,Planning
+2026-01-22,Jan 22,22,Low estimate,2,908.200000,Uncertainty
+2026-01-22,Jan 22,22,High estimate,3,1245.620000,Uncertainty
+2026-01-22,Jan 22,22,Demand plan,4,1085.000000,Planning
+2026-01-22,Jan 22,22,Capacity,5,2350.000000,Planning
+2026-01-23,Jan 23,23,Forecast,1,1288.770000,Planning
+2026-01-23,Jan 23,23,Low estimate,2,1120.060000,Uncertainty
+2026-01-23,Jan 23,23,High estimate,3,1457.480000,Uncertainty
+2026-01-23,Jan 23,23,Demand plan,4,1277.000000,Planning
+2026-01-23,Jan 23,23,Capacity,5,2350.000000,Planning
+2026-01-24,Jan 24,24,Forecast,1,1796.350000,Planning
+2026-01-24,Jan 24,24,Low estimate,2,1627.640000,Uncertainty
+2026-01-24,Jan 24,24,High estimate,3,1965.060000,Uncertainty
+2026-01-24,Jan 24,24,Demand plan,4,1781.000000,Planning
+2026-01-24,Jan 24,24,Capacity,5,2500.000000,Planning
+2026-01-25,Jan 25,25,Forecast,1,1551.970000,Planning
+2026-01-25,Jan 25,25,Low estimate,2,1383.260000,Uncertainty
+2026-01-25,Jan 25,25,High estimate,3,1720.680000,Uncertainty
+2026-01-25,Jan 25,25,Demand plan,4,1525.000000,Planning
+2026-01-25,Jan 25,25,Capacity,5,2500.000000,Planning
+2026-01-26,Jan 26,26,Forecast,1,1010.370000,Planning
+2026-01-26,Jan 26,26,Low estimate,2,841.660000,Uncertainty
+2026-01-26,Jan 26,26,High estimate,3,1179.080000,Uncertainty
+2026-01-26,Jan 26,26,Demand plan,4,1036.000000,Planning
+2026-01-26,Jan 26,26,Capacity,5,2350.000000,Planning
+2026-01-27,Jan 27,27,Forecast,1,914.010000,Planning
+2026-01-27,Jan 27,27,Low estimate,2,745.300000,Uncertainty
+2026-01-27,Jan 27,27,High estimate,3,1082.720000,Uncertainty
+2026-01-27,Jan 27,27,Demand plan,4,934.000000,Planning
+2026-01-27,Jan 27,27,Capacity,5,2350.000000,Planning
+2026-01-28,Jan 28,28,Forecast,1,995.970000,Planning
+2026-01-28,Jan 28,28,Low estimate,2,827.260000,Uncertainty
+2026-01-28,Jan 28,28,High estimate,3,1164.680000,Uncertainty
+2026-01-28,Jan 28,28,Demand plan,4,1014.000000,Planning
+2026-01-28,Jan 28,28,Capacity,5,2350.000000,Planning
+2026-01-29,Jan 29,29,Forecast,1,1075.000000,Planning
+2026-01-29,Jan 29,29,Low estimate,2,906.290000,Uncertainty
+2026-01-29,Jan 29,29,High estimate,3,1243.710000,Uncertainty
+2026-01-29,Jan 29,29,Demand plan,4,1081.000000,Planning
+2026-01-29,Jan 29,29,Capacity,5,2350.000000,Planning
+2026-01-30,Jan 30,30,Forecast,1,1305.970000,Planning
+2026-01-30,Jan 30,30,Low estimate,2,1137.260000,Uncertainty
+2026-01-30,Jan 30,30,High estimate,3,1474.680000,Uncertainty
+2026-01-30,Jan 30,30,Demand plan,4,1303.000000,Planning
+2026-01-30,Jan 30,30,Capacity,5,2350.000000,Planning

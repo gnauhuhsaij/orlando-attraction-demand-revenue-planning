@@ -6,6 +6,7 @@
 BEGIN;
 SET LOCAL search_path TO analytics, public;
 
+DROP VIEW IF EXISTS vw_daily_business_action_plan;
 DROP VIEW IF EXISTS vw_latest_product_revenue_forecast;
 DROP VIEW IF EXISTS vw_latest_revenue_forecast;
 DROP VIEW IF EXISTS vw_revenue_forecast_accuracy;

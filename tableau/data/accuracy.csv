@@ -1,0 +1,9 @@
+forecast_domain,forecast_range,observations,demand_mae_tickets,revenue_wape_ratio,interval_coverage_pct
+Demand,01-07 days,84,122.390000,,80.950000
+Demand,08-14 days,84,89.380000,,76.190000
+Demand,15-21 days,84,108.630000,,84.130000
+Demand,22-30 days,108,94.970000,,87.650000
+Revenue,01-07 days,84,,0.089400,82.540000
+Revenue,08-14 days,84,,0.065200,77.780000
+Revenue,15-21 days,84,,0.079000,84.130000
+Revenue,22-30 days,108,,0.068800,87.650000

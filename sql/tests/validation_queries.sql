@@ -415,6 +415,71 @@ WHERE product.product_rows <> (SELECT count(*) FROM dim_product)
        )
    );
 
+-- Campaign analysis runs must preserve estimator, match, and balance contracts.
+INSERT INTO data_quality_failures
+SELECT
+    'invalid_campaign_evaluation_interval',
+    campaign_evaluation_id::text,
+    'Campaign estimate is outside its stored confidence interval'
+FROM fact_campaign_evaluation
+WHERE lower_bound > estimate_value OR estimate_value > upper_bound;
+
+INSERT INTO data_quality_failures
+SELECT
+    'invalid_campaign_evaluation_metadata',
+    campaign_evaluation_id::text,
+    'Campaign estimator unit or p-value metadata is inconsistent'
+FROM fact_campaign_evaluation
+WHERE (
+        estimator_name = 'matched_block_bootstrap'
+        AND (period_name <> 'campaign_window' OR p_value IS NOT NULL)
+      )
+   OR (
+        estimator_name = 'regression_hac'
+        AND (estimate_unit <> 'percent' OR p_value IS NULL)
+      );
+
+INSERT INTO data_quality_failures
+WITH run_counts AS (
+    SELECT
+        analysis.run_id,
+        analysis.treatment_days,
+        analysis.matched_pairs,
+        analysis.matched_balance_passed,
+        count(DISTINCT evaluation.campaign_evaluation_id)::integer
+            AS evaluation_rows,
+        count(DISTINCT matched.treatment_date_key)::integer AS match_rows,
+        count(DISTINCT balance.covariate_name)::integer AS balance_rows,
+        bool_and(balance.balance_passed) AS all_balance_passed
+    FROM fact_campaign_analysis_run AS analysis
+    LEFT JOIN fact_campaign_evaluation AS evaluation USING (run_id)
+    LEFT JOIN fact_campaign_match AS matched USING (run_id)
+    LEFT JOIN fact_campaign_balance AS balance USING (run_id)
+    GROUP BY
+        analysis.run_id,
+        analysis.treatment_days,
+        analysis.matched_pairs,
+        analysis.matched_balance_passed
+)
+SELECT
+    'incomplete_campaign_analysis_run',
+    run_id,
+    'Campaign run does not contain 9 estimates, all matches, and 6 balance rows'
+FROM run_counts
+WHERE evaluation_rows <> 9
+   OR match_rows <> matched_pairs
+   OR match_rows <> treatment_days
+   OR balance_rows <> 6
+   OR all_balance_passed IS DISTINCT FROM matched_balance_passed;
+
+INSERT INTO data_quality_failures
+SELECT
+    'campaign_analysis_causal_claim',
+    run_id,
+    'Observational campaign analysis cannot authorize a causal claim'
+FROM fact_campaign_analysis_run
+WHERE causal_claim_allowed;
+
 -- The synthetic model requires exactly one explicit fallback campaign member.
 INSERT INTO data_quality_failures
 SELECT

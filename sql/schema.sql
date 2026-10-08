@@ -433,6 +433,140 @@ CREATE TABLE IF NOT EXISTS fact_product_revenue_forecast (
         )
 );
 
+CREATE TABLE IF NOT EXISTS fact_campaign_analysis_run (
+    run_id                varchar(64) PRIMARY KEY,
+    campaign_family       varchar(40) NOT NULL,
+    analysis_version      varchar(40) NOT NULL,
+    treatment_definition  text NOT NULL,
+    control_definition    text NOT NULL,
+    primary_outcome       varchar(40) NOT NULL,
+    treatment_days        integer NOT NULL CHECK (treatment_days > 0),
+    control_pool_days     integer NOT NULL CHECK (control_pool_days > 0),
+    matched_pairs         integer NOT NULL CHECK (matched_pairs > 0),
+    matching_ratio        smallint NOT NULL CHECK (matching_ratio > 0),
+    balance_threshold     numeric(8, 6) NOT NULL
+                          CHECK (balance_threshold > 0),
+    matched_balance_passed boolean NOT NULL,
+    bootstrap_samples     integer NOT NULL CHECK (bootstrap_samples >= 100),
+    bootstrap_block_days  smallint NOT NULL CHECK (bootstrap_block_days > 0),
+    marketing_spend       numeric(14, 2) NOT NULL CHECK (marketing_spend >= 0),
+    attributed_discount_amount numeric(14, 2) NOT NULL
+                          CHECK (attributed_discount_amount >= 0),
+    estimated_incremental_net_revenue numeric(16, 2) NOT NULL,
+    incremental_revenue_lower_95 numeric(16, 2) NOT NULL,
+    incremental_revenue_upper_95 numeric(16, 2) NOT NULL,
+    estimated_net_revenue_after_marketing numeric(16, 2) NOT NULL,
+    associated_revenue_on_marketing_spend numeric(14, 6),
+    associated_return_after_marketing_spend numeric(14, 6),
+    pre_period_revenue_placebo_p_value numeric(12, 10) NOT NULL
+                          CHECK (
+                              pre_period_revenue_placebo_p_value BETWEEN 0 AND 1
+                          ),
+    causal_claim_allowed  boolean NOT NULL DEFAULT false
+                          CHECK (NOT causal_claim_allowed),
+    created_at            timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT ck_fact_campaign_analysis_run_interval
+        CHECK (
+            incremental_revenue_lower_95
+            <= estimated_incremental_net_revenue
+            AND estimated_incremental_net_revenue
+            <= incremental_revenue_upper_95
+        ),
+    CONSTRAINT ck_fact_campaign_analysis_run_matching
+        CHECK (matched_pairs = treatment_days * matching_ratio)
+);
+
+CREATE TABLE IF NOT EXISTS fact_campaign_evaluation (
+    campaign_evaluation_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    run_id                varchar(64) NOT NULL
+                          REFERENCES fact_campaign_analysis_run (run_id)
+                          ON DELETE CASCADE,
+    outcome_name          varchar(40) NOT NULL,
+    estimator_name        varchar(40) NOT NULL
+                          CHECK (
+                              estimator_name IN (
+                                  'matched_block_bootstrap',
+                                  'regression_hac'
+                              )
+                          ),
+    period_name           varchar(30) NOT NULL
+                          CHECK (
+                              period_name IN (
+                                  'campaign_window',
+                                  'pre_period_placebo'
+                              )
+                          ),
+    observations          integer NOT NULL CHECK (observations > 0),
+    estimate_value        numeric(18, 6) NOT NULL,
+    estimate_pct          numeric(14, 6) NOT NULL,
+    lower_bound           numeric(18, 6) NOT NULL,
+    upper_bound           numeric(18, 6) NOT NULL,
+    estimate_unit         varchar(30) NOT NULL,
+    p_value               numeric(12, 10)
+                          CHECK (p_value BETWEEN 0 AND 1),
+    effect_size           numeric(14, 8),
+    interval_excludes_zero boolean NOT NULL,
+    is_primary_outcome    boolean NOT NULL,
+    created_at            timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_fact_campaign_evaluation_result
+        UNIQUE (run_id, outcome_name, estimator_name, period_name),
+    CONSTRAINT ck_fact_campaign_evaluation_interval
+        CHECK (lower_bound <= estimate_value AND estimate_value <= upper_bound)
+);
+
+CREATE TABLE IF NOT EXISTS fact_campaign_match (
+    run_id                varchar(64) NOT NULL
+                          REFERENCES fact_campaign_analysis_run (run_id)
+                          ON DELETE CASCADE,
+    treatment_date_key    integer NOT NULL REFERENCES dim_date (date_key),
+    control_date_key      integer NOT NULL REFERENCES dim_date (date_key),
+    campaign_year         smallint NOT NULL,
+    season                varchar(20) NOT NULL,
+    day_of_week           smallint NOT NULL CHECK (day_of_week BETWEEN 1 AND 7),
+    match_distance        numeric(14, 8) NOT NULL CHECK (match_distance >= 0),
+    treated_net_demand    integer NOT NULL CHECK (treated_net_demand >= 0),
+    control_net_demand    integer NOT NULL CHECK (control_net_demand >= 0),
+    demand_lift           integer NOT NULL,
+    treated_net_revenue   numeric(14, 2) NOT NULL CHECK (treated_net_revenue >= 0),
+    control_net_revenue   numeric(14, 2) NOT NULL CHECK (control_net_revenue >= 0),
+    net_revenue_lift      numeric(14, 2) NOT NULL,
+    treated_net_revenue_per_ticket numeric(12, 4) NOT NULL
+                          CHECK (treated_net_revenue_per_ticket > 0),
+    control_net_revenue_per_ticket numeric(12, 4) NOT NULL
+                          CHECK (control_net_revenue_per_ticket > 0),
+    net_revenue_per_ticket_lift numeric(12, 4) NOT NULL,
+    created_at            timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (run_id, treatment_date_key),
+    CONSTRAINT ck_fact_campaign_match_distinct_dates
+        CHECK (treatment_date_key <> control_date_key),
+    CONSTRAINT ck_fact_campaign_match_demand_lift
+        CHECK (demand_lift = treated_net_demand - control_net_demand),
+    CONSTRAINT ck_fact_campaign_match_revenue_lift
+        CHECK (
+            net_revenue_lift
+            = round(treated_net_revenue - control_net_revenue, 2)
+        )
+);
+
+CREATE TABLE IF NOT EXISTS fact_campaign_balance (
+    run_id                varchar(64) NOT NULL
+                          REFERENCES fact_campaign_analysis_run (run_id)
+                          ON DELETE CASCADE,
+    covariate_name        varchar(60) NOT NULL,
+    raw_smd               numeric(14, 8) NOT NULL,
+    matched_smd           numeric(14, 8) NOT NULL,
+    balance_threshold     numeric(8, 6) NOT NULL
+                          CHECK (balance_threshold > 0),
+    balance_passed        boolean NOT NULL,
+    created_at            timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (run_id, covariate_name),
+    CONSTRAINT ck_fact_campaign_balance_pass
+        CHECK (
+            balance_passed
+            = (abs(matched_smd) <= balance_threshold)
+        )
+);
+
 -- Keep pre-forecast local databases compatible when this schema is reapplied.
 ALTER TABLE fact_forecast
     ADD COLUMN IF NOT EXISTS forecast_run_type varchar(15)
@@ -516,6 +650,12 @@ CREATE INDEX IF NOT EXISTS ix_fact_revenue_forecast_run_type_created
     ON fact_revenue_forecast (forecast_run_type, created_at DESC);
 CREATE INDEX IF NOT EXISTS ix_fact_product_revenue_forecast_target
     ON fact_product_revenue_forecast (target_date_key, product_key);
+CREATE INDEX IF NOT EXISTS ix_fact_campaign_analysis_created
+    ON fact_campaign_analysis_run (created_at DESC, run_id DESC);
+CREATE INDEX IF NOT EXISTS ix_fact_campaign_evaluation_run
+    ON fact_campaign_evaluation (run_id, outcome_name, estimator_name);
+CREATE INDEX IF NOT EXISTS ix_fact_campaign_match_dates
+    ON fact_campaign_match (treatment_date_key, control_date_key);
 
 COMMENT ON SCHEMA analytics IS
     'Analytical star schema for the Orlando attraction planning portfolio project.';
@@ -548,6 +688,14 @@ COMMENT ON TABLE fact_revenue_forecast IS
     'One row per final revenue model run and target date, retaining backtests and production forecasts.';
 COMMENT ON TABLE fact_product_revenue_forecast IS
     'Product-level demand share, net yield, and revenue components for each retained revenue forecast.';
+COMMENT ON TABLE fact_campaign_analysis_run IS
+    'One versioned observational campaign analysis run with design and commercial summary metadata.';
+COMMENT ON TABLE fact_campaign_evaluation IS
+    'Outcome estimates from matched-pair and regression sensitivity estimators for each campaign analysis run.';
+COMMENT ON TABLE fact_campaign_match IS
+    'One treatment date and its selected no-campaign control date for each campaign analysis run.';
+COMMENT ON TABLE fact_campaign_balance IS
+    'Pre-match and post-match standardized mean differences for each observed campaign covariate.';
 COMMENT ON COLUMN fact_revenue_forecast.actual_net_revenue IS
     'Observed net revenue by visit date, populated only when the target date has actuals.';
 

@@ -1,39 +1,56 @@
 # Orlando Attraction Demand & Revenue Planning
 
-An end-to-end analytics project that forecasts daily attraction demand and translates the results into pricing, marketing, capacity, and revenue-planning recommendations.
+An end-to-end planning system that converts daily attraction forecasts into pricing, marketing, capacity, and revenue actions.
 
-## Business Questions
+## Business Problem
 
-1. How much demand should the business expect on each of the next 30 days?
-2. Are changes in demand most associated with price, weather, holidays, school breaks, or marketing activity?
-3. Which dates are likely to be capacity-constrained, and which dates may require promotion?
+The project is designed for a revenue-planning team that needs to answer three questions before the next operating month:
 
-## Data
+1. How many tickets and how much net revenue should be expected each day?
+2. Which changes are associated with price, weather, holidays, school breaks, and campaigns?
+3. Which dates need a pricing, promotion, or capacity decision?
 
-The project combines documented public contextual data with transparently generated synthetic commercial data.
+## Decision Story
 
-- Public data: Orlando weather, federal holidays, selected school-break calendars, and search-interest signals where reproducible
-- Synthetic data: ticket sales, prices, discounts, refunds, campaigns, marketing spend, capacity, and revenue targets
-- Derived data: model features, forecasts, forecast errors, campaign estimates, and daily action recommendations
+The January 2026 forecast expects **37,722 tickets** and **$4.23M in net revenue**. Peak expected utilization is **71.9%**, so the current plan does not indicate a capacity constraint. Two dates need review: protect price on **Jan 10**, when demand is strongest, and monitor revenue on **Jan 19**, when forecast revenue is below plan.
 
-This portfolio project does not use or claim access to Disney, Universal, or another attraction operator's internal data.
+[![Thirty-day demand, revenue, and recommended actions](outputs/figures/30-Day%20Outlook%20%26%20Actions.png)](tableau/orlando_demand_revenue_planning.twbx)
 
-## Approach
+Rolling backtests show a daily demand error of **103.3 tickets (MAE)** and a revenue error of **7.5% (WAPE)**. Campaign dates produced **8.3% more revenue than matched similar dates** and an estimated **$11.74 net gain per $1 of spend**. This is an observational association, not a causal claim.
 
-- Model the analytical data in PostgreSQL using a documented star schema
-- Validate primary keys, foreign keys, date coverage, and financial relationships with automated SQL and Python checks
-- Compare seasonal-naive and moving-average baselines with interpretable statistical and machine-learning models
-- Evaluate forecasts through rolling time-based backtests using MAE, RMSE, WAPE, MAPE, and bias
-- Estimate campaign-associated demand and net-revenue lift while controlling for observable demand drivers
-- Convert forecasts into capacity-risk, demand-gap, promotion, and weather-risk actions
+[![Revenue drivers, campaign comparison, and forecast confidence](outputs/figures/Revenue%20Drivers%20%26%20Confidence.png)](tableau/orlando_demand_revenue_planning.twbx)
 
-Core tools: PostgreSQL, SQL, Python, Tableau, Excel, and GitHub Actions.
+Open the packaged [Tableau workbook](tableau/orlando_demand_revenue_planning.twbx) to explore both decision pages.
 
-## Deliverables
+## Data & Method
 
-- Reproducible data-generation and ETL pipeline
-- SQL schema, validation tests, and business analysis queries
-- Versioned 30-day demand and product-level revenue forecasts with uncertainty ranges
-- Daily pricing, marketing, and operating action table
-- Tableau decision dashboard and Excel planning workbook
-- Executive recommendation memo and technical documentation
+- **Public context:** NOAA Orlando weather, U.S. federal holidays, selected school-break calendars, and reproducible search-interest signals
+- **Synthetic commercial data:** anonymized ticket sales, prices, discounts, refunds, campaigns, spend, capacity, and targets
+- **Data platform:** PostgreSQL star schema with transactional loading, dependency-aware transformations, SHA-256 source manifests, and automated quality checks
+- **Demand forecast:** seasonal-naive and moving-average baselines compared with regression, gradient boosting, SARIMAX, and LSTM challengers using the same 360 rolling-origin observations
+- **Revenue forecast:** selected SARIMAX demand forecast allocated by histogram gradient boosting product mix, then valued with ridge product-level net yield
+- **Campaign analysis:** treated dates matched to comparable non-campaign dates, with covariate-balance checks and a regression sensitivity model
+
+The pipeline stores versioned forecasts, uncertainty intervals, backtest results, campaign estimates, and daily business actions in PostgreSQL. It does not use or claim access to Disney, Universal, or any other operator's internal data.
+
+## Reproduce
+
+Requirements: Python 3.11+, PostgreSQL, and Tableau Desktop or Tableau Public.
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -r requirements.txt
+createdb orlando_demand_revenue
+
+.venv/bin/python -m src.download_public_data
+.venv/bin/python -m src.prepare_calendar_data
+.venv/bin/python -m src.generate_sales_data
+.venv/bin/python -m src.load_postgres
+.venv/bin/python -m src.forecast all
+.venv/bin/python -m src.forecast_revenue all
+.venv/bin/python -m src.analyze_campaign
+.venv/bin/python tableau/build_workbook.py
+.venv/bin/python -m pytest
+```
+
+The main deliverables are the SQL model and validation suite in [`sql/`](sql/), production pipelines in [`src/`](src/), review exports in [`outputs/`](outputs/), and the two-page Tableau decision story in [`tableau/`](tableau/).

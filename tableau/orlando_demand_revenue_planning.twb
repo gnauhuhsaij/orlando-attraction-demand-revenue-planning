@@ -1,0 +1,3336 @@
+<?xml version='1.0' encoding='utf-8'?>
+<workbook original-version="18.1" source-build="2026.2.3 (20262.26.0912.1023)" source-platform="mac" version="18.1" xmlns:user="http://www.tableausoftware.com/xml/user">
+  <document-format-change-manifest>
+    <AccessibleZoneTabOrder />
+    <AnimationOnByDefault />
+    <MarkAnimation />
+    <ObjectModelEncapsulateLegacy />
+    <ObjectModelTableType />
+    <SchemaViewerObjectModel />
+    <SetMembershipControl />
+    <SheetIdentifierTracking />
+    <WindowsPersistSimpleIdentifiers />
+    <WorksheetBackgroundTransparency />
+    <ZoneBackgroundTransparency />
+  </document-format-change-manifest>
+  <preferences>
+    <color-palette custom="true" name="Orlando Planning" type="regular">
+      <color>#17324D</color>
+      <color>#1F8A89</color>
+      <color>#E07A3F</color>
+      <color>#C84A4A</color>
+      <color>#6C7A89</color>
+      <color>#A7D8D8</color>
+    </color-palette>
+  </preferences>
+  <datasources>
+    <datasource caption="Planning" inline="true" name="federated.orlando_planning" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Planning" name="textscan.orlando_planning">
+            <connection class="textscan" directory="data" filename="planning.csv" password="" server="" />
+          </named-connection>
+        </named-connections>
+        <relation connection="textscan.orlando_planning" name="planning.csv" table="[planning#csv]" type="table">
+          <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+            <column datatype="string" name="target_date" ordinal="0" />
+            <column datatype="integer" name="forecast_horizon_days" ordinal="1" />
+            <column datatype="string" name="forecast_created_date" ordinal="2" />
+            <column datatype="string" name="training_end_date" ordinal="3" />
+            <column datatype="string" name="demand_model_name" ordinal="4" />
+            <column datatype="string" name="revenue_model_name" ordinal="5" />
+            <column datatype="string" name="product_mix_model_name" ordinal="6" />
+            <column datatype="string" name="product_yield_model_name" ordinal="7" />
+            <column datatype="real" name="predicted_demand" ordinal="8" />
+            <column datatype="real" name="demand_lower_bound" ordinal="9" />
+            <column datatype="real" name="demand_upper_bound" ordinal="10" />
+            <column datatype="integer" name="available_capacity" ordinal="11" />
+            <column datatype="real" name="forecast_capacity_utilization" ordinal="12" />
+            <column datatype="real" name="upper_capacity_utilization" ordinal="13" />
+            <column datatype="integer" name="demand_target" ordinal="14" />
+            <column datatype="real" name="forecast_demand_variance" ordinal="15" />
+            <column datatype="real" name="forecast_demand_variance_pct" ordinal="16" />
+            <column datatype="string" name="demand_status" ordinal="17" />
+            <column datatype="integer" name="demand_action_priority" ordinal="18" />
+            <column datatype="integer" name="capacity_watch_rank" ordinal="19" />
+            <column datatype="integer" name="demand_watch_rank" ordinal="20" />
+            <column datatype="real" name="predicted_net_revenue" ordinal="21" />
+            <column datatype="real" name="revenue_lower_bound" ordinal="22" />
+            <column datatype="real" name="revenue_upper_bound" ordinal="23" />
+            <column datatype="real" name="predicted_net_revenue_per_ticket" ordinal="24" />
+            <column datatype="real" name="revenue_target" ordinal="25" />
+            <column datatype="real" name="forecast_revenue_variance" ordinal="26" />
+            <column datatype="real" name="forecast_revenue_variance_pct" ordinal="27" />
+            <column datatype="real" name="lower_revenue_variance_pct" ordinal="28" />
+            <column datatype="real" name="upper_revenue_variance_pct" ordinal="29" />
+            <column datatype="boolean" name="is_weekend" ordinal="30" />
+            <column datatype="boolean" name="holiday_flag" ordinal="31" />
+            <column datatype="boolean" name="school_break_flag" ordinal="32" />
+            <column datatype="string" name="season" ordinal="33" />
+            <column datatype="real" name="planned_price_multiplier" ordinal="34" />
+            <column datatype="integer" name="active_campaign_count" ordinal="35" />
+            <column datatype="real" name="maximum_planned_discount" ordinal="36" />
+            <column datatype="string" name="historical_campaign_family" ordinal="37" />
+            <column datatype="real" name="historical_matched_revenue_lift_pct" ordinal="38" />
+            <column datatype="real" name="historical_regression_revenue_lift_pct" ordinal="39" />
+            <column datatype="string" name="historical_campaign_revenue_evidence" ordinal="40" />
+            <column datatype="string" name="historical_campaign_ticket_yield_evidence" ordinal="41" />
+            <column datatype="boolean" name="historical_campaign_causal_claim_allowed" ordinal="42" />
+            <column datatype="string" name="revenue_status" ordinal="43" />
+            <column datatype="string" name="revenue_evidence_strength" ordinal="44" />
+            <column datatype="integer" name="revenue_watch_rank" ordinal="45" />
+            <column datatype="integer" name="revenue_upside_rank" ordinal="46" />
+            <column datatype="string" name="recommended_action_code" ordinal="47" />
+            <column datatype="integer" name="business_action_priority" ordinal="48" />
+            <column datatype="string" name="decision_confidence" ordinal="49" />
+            <column datatype="integer" name="business_action_rank" ordinal="50" />
+            <column datatype="string" name="recommended_action" ordinal="51" />
+            <column datatype="string" name="campaign_evidence_scope" ordinal="52" />
+            <column datatype="string" name="short_date" ordinal="53" />
+            <column datatype="string" name="horizon_bucket" ordinal="54" />
+            <column datatype="real" name="selected_demand_mae" ordinal="55" />
+            <column datatype="real" name="selected_demand_mape_pct" ordinal="56" />
+            <column datatype="real" name="selected_demand_coverage_pct" ordinal="57" />
+            <column datatype="real" name="selected_revenue_mae" ordinal="58" />
+            <column datatype="real" name="selected_revenue_wape_pct" ordinal="59" />
+            <column datatype="real" name="selected_revenue_coverage_pct" ordinal="60" />
+            <column datatype="real" name="peak_capacity_utilization" ordinal="61" />
+            <column datatype="string" name="decision_scope" ordinal="62" />
+            <column datatype="string" name="decision_label" ordinal="63" />
+            <column datatype="string" name="watchlist_label" ordinal="64" />
+            <column datatype="string" name="action_watch_scope" ordinal="65" />
+            <column datatype="string" name="demand_watch_scope" ordinal="66" />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class="column">
+            <remote-name>target_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[target_date]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>target_date</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_horizon_days</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[forecast_horizon_days]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>forecast_horizon_days</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_created_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[forecast_created_date]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>forecast_created_date</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>training_end_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[training_end_date]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>training_end_date</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_model_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[demand_model_name]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>demand_model_name</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_model_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[revenue_model_name]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>revenue_model_name</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>product_mix_model_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[product_mix_model_name]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>product_mix_model_name</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>product_yield_model_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[product_yield_model_name]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>product_yield_model_name</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>predicted_demand</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[predicted_demand]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>predicted_demand</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_lower_bound</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[demand_lower_bound]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>demand_lower_bound</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_upper_bound</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[demand_upper_bound]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>demand_upper_bound</remote-alias>
+            <ordinal>10</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>available_capacity</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[available_capacity]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>available_capacity</remote-alias>
+            <ordinal>11</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_capacity_utilization</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[forecast_capacity_utilization]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>forecast_capacity_utilization</remote-alias>
+            <ordinal>12</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>upper_capacity_utilization</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[upper_capacity_utilization]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>upper_capacity_utilization</remote-alias>
+            <ordinal>13</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_target</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[demand_target]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>demand_target</remote-alias>
+            <ordinal>14</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_demand_variance</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[forecast_demand_variance]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>forecast_demand_variance</remote-alias>
+            <ordinal>15</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_demand_variance_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[forecast_demand_variance_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>forecast_demand_variance_pct</remote-alias>
+            <ordinal>16</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_status</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[demand_status]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>demand_status</remote-alias>
+            <ordinal>17</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_action_priority</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[demand_action_priority]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>demand_action_priority</remote-alias>
+            <ordinal>18</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>capacity_watch_rank</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[capacity_watch_rank]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>capacity_watch_rank</remote-alias>
+            <ordinal>19</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_watch_rank</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[demand_watch_rank]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>demand_watch_rank</remote-alias>
+            <ordinal>20</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>predicted_net_revenue</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[predicted_net_revenue]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>predicted_net_revenue</remote-alias>
+            <ordinal>21</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_lower_bound</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[revenue_lower_bound]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>revenue_lower_bound</remote-alias>
+            <ordinal>22</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_upper_bound</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[revenue_upper_bound]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>revenue_upper_bound</remote-alias>
+            <ordinal>23</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>predicted_net_revenue_per_ticket</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[predicted_net_revenue_per_ticket]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>predicted_net_revenue_per_ticket</remote-alias>
+            <ordinal>24</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_target</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[revenue_target]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>revenue_target</remote-alias>
+            <ordinal>25</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_revenue_variance</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[forecast_revenue_variance]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>forecast_revenue_variance</remote-alias>
+            <ordinal>26</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_revenue_variance_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[forecast_revenue_variance_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>forecast_revenue_variance_pct</remote-alias>
+            <ordinal>27</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>lower_revenue_variance_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[lower_revenue_variance_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>lower_revenue_variance_pct</remote-alias>
+            <ordinal>28</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>upper_revenue_variance_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[upper_revenue_variance_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>upper_revenue_variance_pct</remote-alias>
+            <ordinal>29</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>is_weekend</remote-name>
+            <remote-type>11</remote-type>
+            <local-name>[is_weekend]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>is_weekend</remote-alias>
+            <ordinal>30</ordinal>
+            <local-type>boolean</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>holiday_flag</remote-name>
+            <remote-type>11</remote-type>
+            <local-name>[holiday_flag]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>holiday_flag</remote-alias>
+            <ordinal>31</ordinal>
+            <local-type>boolean</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>school_break_flag</remote-name>
+            <remote-type>11</remote-type>
+            <local-name>[school_break_flag]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>school_break_flag</remote-alias>
+            <ordinal>32</ordinal>
+            <local-type>boolean</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>season</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[season]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>season</remote-alias>
+            <ordinal>33</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>planned_price_multiplier</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[planned_price_multiplier]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>planned_price_multiplier</remote-alias>
+            <ordinal>34</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>active_campaign_count</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[active_campaign_count]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>active_campaign_count</remote-alias>
+            <ordinal>35</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>maximum_planned_discount</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[maximum_planned_discount]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>maximum_planned_discount</remote-alias>
+            <ordinal>36</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>historical_campaign_family</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[historical_campaign_family]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>historical_campaign_family</remote-alias>
+            <ordinal>37</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>historical_matched_revenue_lift_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[historical_matched_revenue_lift_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>historical_matched_revenue_lift_pct</remote-alias>
+            <ordinal>38</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>historical_regression_revenue_lift_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[historical_regression_revenue_lift_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>historical_regression_revenue_lift_pct</remote-alias>
+            <ordinal>39</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>historical_campaign_revenue_evidence</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[historical_campaign_revenue_evidence]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>historical_campaign_revenue_evidence</remote-alias>
+            <ordinal>40</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>historical_campaign_ticket_yield_evidence</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[historical_campaign_ticket_yield_evidence]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>historical_campaign_ticket_yield_evidence</remote-alias>
+            <ordinal>41</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>historical_campaign_causal_claim_allowed</remote-name>
+            <remote-type>11</remote-type>
+            <local-name>[historical_campaign_causal_claim_allowed]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>historical_campaign_causal_claim_allowed</remote-alias>
+            <ordinal>42</ordinal>
+            <local-type>boolean</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_status</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[revenue_status]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>revenue_status</remote-alias>
+            <ordinal>43</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_evidence_strength</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[revenue_evidence_strength]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>revenue_evidence_strength</remote-alias>
+            <ordinal>44</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_watch_rank</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[revenue_watch_rank]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>revenue_watch_rank</remote-alias>
+            <ordinal>45</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_upside_rank</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[revenue_upside_rank]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>revenue_upside_rank</remote-alias>
+            <ordinal>46</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>recommended_action_code</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[recommended_action_code]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>recommended_action_code</remote-alias>
+            <ordinal>47</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>business_action_priority</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[business_action_priority]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>business_action_priority</remote-alias>
+            <ordinal>48</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>decision_confidence</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[decision_confidence]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>decision_confidence</remote-alias>
+            <ordinal>49</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>business_action_rank</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[business_action_rank]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>business_action_rank</remote-alias>
+            <ordinal>50</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>recommended_action</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[recommended_action]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>recommended_action</remote-alias>
+            <ordinal>51</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>campaign_evidence_scope</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[campaign_evidence_scope]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>campaign_evidence_scope</remote-alias>
+            <ordinal>52</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>short_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[short_date]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>short_date</remote-alias>
+            <ordinal>53</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>horizon_bucket</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[horizon_bucket]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>horizon_bucket</remote-alias>
+            <ordinal>54</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>selected_demand_mae</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[selected_demand_mae]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>selected_demand_mae</remote-alias>
+            <ordinal>55</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>selected_demand_mape_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[selected_demand_mape_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>selected_demand_mape_pct</remote-alias>
+            <ordinal>56</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>selected_demand_coverage_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[selected_demand_coverage_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>selected_demand_coverage_pct</remote-alias>
+            <ordinal>57</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>selected_revenue_mae</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[selected_revenue_mae]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>selected_revenue_mae</remote-alias>
+            <ordinal>58</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>selected_revenue_wape_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[selected_revenue_wape_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>selected_revenue_wape_pct</remote-alias>
+            <ordinal>59</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>selected_revenue_coverage_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[selected_revenue_coverage_pct]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>selected_revenue_coverage_pct</remote-alias>
+            <ordinal>60</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>peak_capacity_utilization</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[peak_capacity_utilization]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>peak_capacity_utilization</remote-alias>
+            <ordinal>61</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>decision_scope</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[decision_scope]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>decision_scope</remote-alias>
+            <ordinal>62</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>decision_label</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[decision_label]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>decision_label</remote-alias>
+            <ordinal>63</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>watchlist_label</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[watchlist_label]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>watchlist_label</remote-alias>
+            <ordinal>64</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>action_watch_scope</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[action_watch_scope]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>action_watch_scope</remote-alias>
+            <ordinal>65</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_watch_scope</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[demand_watch_scope]</local-name>
+            <parent-name>[planning.csv]</parent-name>
+            <remote-alias>demand_watch_scope</remote-alias>
+            <ordinal>66</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PLANNING_TABLE]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled="yes" />
+      <column caption="planning.csv" datatype="table" name="[__tableau_internal_object_id__].[PLANNING_TABLE]" role="measure" type="quantitative" />
+      <column caption="Target Date" datatype="string" name="[target_date]" role="dimension" type="nominal" />
+      <column caption="Forecast Horizon Days" datatype="integer" name="[forecast_horizon_days]" role="measure" type="quantitative" />
+      <column caption="Forecast Created Date" datatype="string" name="[forecast_created_date]" role="dimension" type="nominal" />
+      <column caption="Training End Date" datatype="string" name="[training_end_date]" role="dimension" type="nominal" />
+      <column caption="Demand Model Name" datatype="string" name="[demand_model_name]" role="dimension" type="nominal" />
+      <column caption="Revenue Model Name" datatype="string" name="[revenue_model_name]" role="dimension" type="nominal" />
+      <column caption="Product Mix Model Name" datatype="string" name="[product_mix_model_name]" role="dimension" type="nominal" />
+      <column caption="Product Yield Model Name" datatype="string" name="[product_yield_model_name]" role="dimension" type="nominal" />
+      <column caption="Predicted Demand" datatype="real" name="[predicted_demand]" role="measure" type="quantitative" />
+      <column caption="Demand Lower Bound" datatype="real" name="[demand_lower_bound]" role="measure" type="quantitative" />
+      <column caption="Demand Upper Bound" datatype="real" name="[demand_upper_bound]" role="measure" type="quantitative" />
+      <column caption="Available Capacity" datatype="integer" name="[available_capacity]" role="measure" type="quantitative" />
+      <column caption="Forecast Capacity Utilization" datatype="real" name="[forecast_capacity_utilization]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Upper Capacity Utilization" datatype="real" name="[upper_capacity_utilization]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Demand Target" datatype="integer" name="[demand_target]" role="measure" type="quantitative" />
+      <column caption="Forecast Demand Variance" datatype="real" name="[forecast_demand_variance]" role="measure" type="quantitative" />
+      <column caption="Forecast Demand Variance Pct" datatype="real" name="[forecast_demand_variance_pct]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Demand Status" datatype="string" name="[demand_status]" role="dimension" type="nominal" />
+      <column caption="Demand Action Priority" datatype="integer" name="[demand_action_priority]" role="measure" type="quantitative" />
+      <column caption="Capacity Watch Rank" datatype="integer" name="[capacity_watch_rank]" role="measure" type="quantitative" />
+      <column caption="Demand Watch Rank" datatype="integer" name="[demand_watch_rank]" role="measure" type="quantitative" />
+      <column caption="Predicted Net Revenue" datatype="real" name="[predicted_net_revenue]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Revenue Lower Bound" datatype="real" name="[revenue_lower_bound]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Revenue Upper Bound" datatype="real" name="[revenue_upper_bound]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Predicted Net Revenue Per Ticket" datatype="real" name="[predicted_net_revenue_per_ticket]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Revenue Target" datatype="real" name="[revenue_target]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Forecast Revenue Variance" datatype="real" name="[forecast_revenue_variance]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Forecast Revenue Variance Pct" datatype="real" name="[forecast_revenue_variance_pct]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Lower Revenue Variance Pct" datatype="real" name="[lower_revenue_variance_pct]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Upper Revenue Variance Pct" datatype="real" name="[upper_revenue_variance_pct]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Is Weekend" datatype="boolean" name="[is_weekend]" role="dimension" type="nominal" />
+      <column caption="Holiday Flag" datatype="boolean" name="[holiday_flag]" role="dimension" type="nominal" />
+      <column caption="School Break Flag" datatype="boolean" name="[school_break_flag]" role="dimension" type="nominal" />
+      <column caption="Season" datatype="string" name="[season]" role="dimension" type="nominal" />
+      <column caption="Planned Price Multiplier" datatype="real" name="[planned_price_multiplier]" role="measure" type="quantitative" />
+      <column caption="Active Campaign Count" datatype="integer" name="[active_campaign_count]" role="measure" type="quantitative" />
+      <column caption="Maximum Planned Discount" datatype="real" name="[maximum_planned_discount]" role="measure" type="quantitative" />
+      <column caption="Historical Campaign Family" datatype="string" name="[historical_campaign_family]" role="dimension" type="nominal" />
+      <column caption="Historical Matched Revenue Lift Pct" datatype="real" name="[historical_matched_revenue_lift_pct]" role="measure" type="quantitative" />
+      <column caption="Historical Regression Revenue Lift Pct" datatype="real" name="[historical_regression_revenue_lift_pct]" role="measure" type="quantitative" />
+      <column caption="Historical Campaign Revenue Evidence" datatype="string" name="[historical_campaign_revenue_evidence]" role="dimension" type="nominal" />
+      <column caption="Historical Campaign Ticket Yield Evidence" datatype="string" name="[historical_campaign_ticket_yield_evidence]" role="dimension" type="nominal" />
+      <column caption="Historical Campaign Causal Claim Allowed" datatype="boolean" name="[historical_campaign_causal_claim_allowed]" role="dimension" type="nominal" />
+      <column caption="Revenue Status" datatype="string" name="[revenue_status]" role="dimension" type="nominal" />
+      <column caption="Revenue Evidence Strength" datatype="string" name="[revenue_evidence_strength]" role="dimension" type="nominal" />
+      <column caption="Revenue Watch Rank" datatype="integer" name="[revenue_watch_rank]" role="measure" type="quantitative" />
+      <column caption="Revenue Upside Rank" datatype="integer" name="[revenue_upside_rank]" role="measure" type="quantitative" />
+      <column caption="Recommended Action Code" datatype="string" name="[recommended_action_code]" role="dimension" type="nominal" />
+      <column caption="Business Action Priority" datatype="integer" name="[business_action_priority]" role="measure" type="quantitative" />
+      <column caption="Decision Confidence" datatype="string" name="[decision_confidence]" role="dimension" type="nominal" />
+      <column caption="Business Action Rank" datatype="integer" name="[business_action_rank]" role="measure" type="quantitative" />
+      <column caption="Recommended Action" datatype="string" name="[recommended_action]" role="dimension" type="nominal" />
+      <column caption="Campaign Evidence Scope" datatype="string" name="[campaign_evidence_scope]" role="dimension" type="nominal" />
+      <column caption="Date" datatype="string" name="[short_date]" role="dimension" type="nominal" />
+      <column caption="Horizon Bucket" datatype="string" name="[horizon_bucket]" role="dimension" type="nominal" />
+      <column caption="Selected Demand Mae" datatype="real" name="[selected_demand_mae]" role="measure" type="quantitative" default-format="n0.0" />
+      <column caption="Selected Demand Mape Pct" datatype="real" name="[selected_demand_mape_pct]" role="measure" type="quantitative" default-format="n0.0" />
+      <column caption="Selected Demand Coverage Pct" datatype="real" name="[selected_demand_coverage_pct]" role="measure" type="quantitative" default-format="n0.0" />
+      <column caption="Selected Revenue Mae" datatype="real" name="[selected_revenue_mae]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Selected Revenue Wape Pct" datatype="real" name="[selected_revenue_wape_pct]" role="measure" type="quantitative" default-format="n0.0" />
+      <column caption="Selected Revenue Coverage Pct" datatype="real" name="[selected_revenue_coverage_pct]" role="measure" type="quantitative" default-format="n0.0" />
+      <column caption="Peak Capacity Used" datatype="real" name="[peak_capacity_utilization]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Decision Scope" datatype="string" name="[decision_scope]" role="dimension" type="nominal" />
+      <column caption="Recommended Action" datatype="string" name="[decision_label]" role="dimension" type="nominal" />
+      <column caption="Watchlist Label" datatype="string" name="[watchlist_label]" role="dimension" type="nominal" />
+      <column caption="Action Watch Scope" datatype="string" name="[action_watch_scope]" role="dimension" type="nominal" />
+      <column caption="Demand Watch Scope" datatype="string" name="[demand_watch_scope]" role="dimension" type="nominal" />
+      <layout dim-ordering="alphabetic" measure-ordering="alphabetic" show-structure="true" />
+      <object-graph>
+        <objects>
+          <object caption="Planning" id="PLANNING_TABLE">
+            <properties context="">
+              <relation connection="textscan.orlando_planning" name="planning.csv" table="[planning#csv]" type="table">
+                <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+                  <column datatype="string" name="target_date" ordinal="0" />
+                  <column datatype="integer" name="forecast_horizon_days" ordinal="1" />
+                  <column datatype="string" name="forecast_created_date" ordinal="2" />
+                  <column datatype="string" name="training_end_date" ordinal="3" />
+                  <column datatype="string" name="demand_model_name" ordinal="4" />
+                  <column datatype="string" name="revenue_model_name" ordinal="5" />
+                  <column datatype="string" name="product_mix_model_name" ordinal="6" />
+                  <column datatype="string" name="product_yield_model_name" ordinal="7" />
+                  <column datatype="real" name="predicted_demand" ordinal="8" />
+                  <column datatype="real" name="demand_lower_bound" ordinal="9" />
+                  <column datatype="real" name="demand_upper_bound" ordinal="10" />
+                  <column datatype="integer" name="available_capacity" ordinal="11" />
+                  <column datatype="real" name="forecast_capacity_utilization" ordinal="12" />
+                  <column datatype="real" name="upper_capacity_utilization" ordinal="13" />
+                  <column datatype="integer" name="demand_target" ordinal="14" />
+                  <column datatype="real" name="forecast_demand_variance" ordinal="15" />
+                  <column datatype="real" name="forecast_demand_variance_pct" ordinal="16" />
+                  <column datatype="string" name="demand_status" ordinal="17" />
+                  <column datatype="integer" name="demand_action_priority" ordinal="18" />
+                  <column datatype="integer" name="capacity_watch_rank" ordinal="19" />
+                  <column datatype="integer" name="demand_watch_rank" ordinal="20" />
+                  <column datatype="real" name="predicted_net_revenue" ordinal="21" />
+                  <column datatype="real" name="revenue_lower_bound" ordinal="22" />
+                  <column datatype="real" name="revenue_upper_bound" ordinal="23" />
+                  <column datatype="real" name="predicted_net_revenue_per_ticket" ordinal="24" />
+                  <column datatype="real" name="revenue_target" ordinal="25" />
+                  <column datatype="real" name="forecast_revenue_variance" ordinal="26" />
+                  <column datatype="real" name="forecast_revenue_variance_pct" ordinal="27" />
+                  <column datatype="real" name="lower_revenue_variance_pct" ordinal="28" />
+                  <column datatype="real" name="upper_revenue_variance_pct" ordinal="29" />
+                  <column datatype="boolean" name="is_weekend" ordinal="30" />
+                  <column datatype="boolean" name="holiday_flag" ordinal="31" />
+                  <column datatype="boolean" name="school_break_flag" ordinal="32" />
+                  <column datatype="string" name="season" ordinal="33" />
+                  <column datatype="real" name="planned_price_multiplier" ordinal="34" />
+                  <column datatype="integer" name="active_campaign_count" ordinal="35" />
+                  <column datatype="real" name="maximum_planned_discount" ordinal="36" />
+                  <column datatype="string" name="historical_campaign_family" ordinal="37" />
+                  <column datatype="real" name="historical_matched_revenue_lift_pct" ordinal="38" />
+                  <column datatype="real" name="historical_regression_revenue_lift_pct" ordinal="39" />
+                  <column datatype="string" name="historical_campaign_revenue_evidence" ordinal="40" />
+                  <column datatype="string" name="historical_campaign_ticket_yield_evidence" ordinal="41" />
+                  <column datatype="boolean" name="historical_campaign_causal_claim_allowed" ordinal="42" />
+                  <column datatype="string" name="revenue_status" ordinal="43" />
+                  <column datatype="string" name="revenue_evidence_strength" ordinal="44" />
+                  <column datatype="integer" name="revenue_watch_rank" ordinal="45" />
+                  <column datatype="integer" name="revenue_upside_rank" ordinal="46" />
+                  <column datatype="string" name="recommended_action_code" ordinal="47" />
+                  <column datatype="integer" name="business_action_priority" ordinal="48" />
+                  <column datatype="string" name="decision_confidence" ordinal="49" />
+                  <column datatype="integer" name="business_action_rank" ordinal="50" />
+                  <column datatype="string" name="recommended_action" ordinal="51" />
+                  <column datatype="string" name="campaign_evidence_scope" ordinal="52" />
+                  <column datatype="string" name="short_date" ordinal="53" />
+                  <column datatype="string" name="horizon_bucket" ordinal="54" />
+                  <column datatype="real" name="selected_demand_mae" ordinal="55" />
+                  <column datatype="real" name="selected_demand_mape_pct" ordinal="56" />
+                  <column datatype="real" name="selected_demand_coverage_pct" ordinal="57" />
+                  <column datatype="real" name="selected_revenue_mae" ordinal="58" />
+                  <column datatype="real" name="selected_revenue_wape_pct" ordinal="59" />
+                  <column datatype="real" name="selected_revenue_coverage_pct" ordinal="60" />
+                  <column datatype="real" name="peak_capacity_utilization" ordinal="61" />
+                  <column datatype="string" name="decision_scope" ordinal="62" />
+                  <column datatype="string" name="decision_label" ordinal="63" />
+                  <column datatype="string" name="watchlist_label" ordinal="64" />
+                  <column datatype="string" name="action_watch_scope" ordinal="65" />
+                  <column datatype="string" name="demand_watch_scope" ordinal="66" />
+                </columns>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
+    <datasource caption="Demand Series" inline="true" name="federated.orlando_demand_series" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Demand Series" name="textscan.orlando_demand_series">
+            <connection class="textscan" directory="data" filename="demand_series.csv" password="" server="" />
+          </named-connection>
+        </named-connections>
+        <relation connection="textscan.orlando_demand_series" name="demand_series.csv" table="[demand_series#csv]" type="table">
+          <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+            <column datatype="string" name="target_date" ordinal="0" />
+            <column datatype="string" name="forecast_date" ordinal="1" />
+            <column datatype="integer" name="forecast_horizon_days" ordinal="2" />
+            <column datatype="string" name="series_name" ordinal="3" />
+            <column datatype="integer" name="series_order" ordinal="4" />
+            <column datatype="real" name="tickets" ordinal="5" />
+            <column datatype="string" name="series_scope" ordinal="6" />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class="column">
+            <remote-name>target_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[target_date]</local-name>
+            <parent-name>[demand_series.csv]</parent-name>
+            <remote-alias>target_date</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[DEMAND_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[forecast_date]</local-name>
+            <parent-name>[demand_series.csv]</parent-name>
+            <remote-alias>forecast_date</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[DEMAND_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_horizon_days</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[forecast_horizon_days]</local-name>
+            <parent-name>[demand_series.csv]</parent-name>
+            <remote-alias>forecast_horizon_days</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[DEMAND_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>series_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[series_name]</local-name>
+            <parent-name>[demand_series.csv]</parent-name>
+            <remote-alias>series_name</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[DEMAND_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>series_order</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[series_order]</local-name>
+            <parent-name>[demand_series.csv]</parent-name>
+            <remote-alias>series_order</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[DEMAND_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>tickets</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[tickets]</local-name>
+            <parent-name>[demand_series.csv]</parent-name>
+            <remote-alias>tickets</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[DEMAND_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>series_scope</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[series_scope]</local-name>
+            <parent-name>[demand_series.csv]</parent-name>
+            <remote-alias>series_scope</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[DEMAND_SERIES_TABLE]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled="yes" />
+      <column caption="demand_series.csv" datatype="table" name="[__tableau_internal_object_id__].[DEMAND_SERIES_TABLE]" role="measure" type="quantitative" />
+      <column caption="Target Date" datatype="string" name="[target_date]" role="dimension" type="nominal" />
+      <column caption="Forecast Date" datatype="string" name="[forecast_date]" role="dimension" type="nominal" />
+      <column caption="Forecast Horizon Days" datatype="integer" name="[forecast_horizon_days]" role="measure" type="quantitative" />
+      <column caption="Measure" datatype="string" name="[series_name]" role="dimension" type="nominal" />
+      <column caption="Series Order" datatype="integer" name="[series_order]" role="measure" type="quantitative" />
+      <column caption="Tickets" datatype="real" name="[tickets]" role="measure" type="quantitative" />
+      <column caption="Series Scope" datatype="string" name="[series_scope]" role="dimension" type="nominal" />
+      <layout dim-ordering="alphabetic" measure-ordering="alphabetic" show-structure="true" />
+      <object-graph>
+        <objects>
+          <object caption="Demand Series" id="DEMAND_SERIES_TABLE">
+            <properties context="">
+              <relation connection="textscan.orlando_demand_series" name="demand_series.csv" table="[demand_series#csv]" type="table">
+                <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+                  <column datatype="string" name="target_date" ordinal="0" />
+                  <column datatype="string" name="forecast_date" ordinal="1" />
+                  <column datatype="integer" name="forecast_horizon_days" ordinal="2" />
+                  <column datatype="string" name="series_name" ordinal="3" />
+                  <column datatype="integer" name="series_order" ordinal="4" />
+                  <column datatype="real" name="tickets" ordinal="5" />
+                  <column datatype="string" name="series_scope" ordinal="6" />
+                </columns>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
+    <datasource caption="Revenue Series" inline="true" name="federated.orlando_revenue_series" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Revenue Series" name="textscan.orlando_revenue_series">
+            <connection class="textscan" directory="data" filename="revenue_series.csv" password="" server="" />
+          </named-connection>
+        </named-connections>
+        <relation connection="textscan.orlando_revenue_series" name="revenue_series.csv" table="[revenue_series#csv]" type="table">
+          <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+            <column datatype="string" name="target_date" ordinal="0" />
+            <column datatype="string" name="forecast_date" ordinal="1" />
+            <column datatype="integer" name="forecast_horizon_days" ordinal="2" />
+            <column datatype="string" name="series_name" ordinal="3" />
+            <column datatype="integer" name="series_order" ordinal="4" />
+            <column datatype="real" name="net_revenue_dollars" ordinal="5" />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class="column">
+            <remote-name>target_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[target_date]</local-name>
+            <parent-name>[revenue_series.csv]</parent-name>
+            <remote-alias>target_date</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[REVENUE_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[forecast_date]</local-name>
+            <parent-name>[revenue_series.csv]</parent-name>
+            <remote-alias>forecast_date</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[REVENUE_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_horizon_days</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[forecast_horizon_days]</local-name>
+            <parent-name>[revenue_series.csv]</parent-name>
+            <remote-alias>forecast_horizon_days</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[REVENUE_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>series_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[series_name]</local-name>
+            <parent-name>[revenue_series.csv]</parent-name>
+            <remote-alias>series_name</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[REVENUE_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>series_order</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[series_order]</local-name>
+            <parent-name>[revenue_series.csv]</parent-name>
+            <remote-alias>series_order</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[REVENUE_SERIES_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>net_revenue_dollars</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[net_revenue_dollars]</local-name>
+            <parent-name>[revenue_series.csv]</parent-name>
+            <remote-alias>net_revenue_dollars</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[REVENUE_SERIES_TABLE]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled="yes" />
+      <column caption="revenue_series.csv" datatype="table" name="[__tableau_internal_object_id__].[REVENUE_SERIES_TABLE]" role="measure" type="quantitative" />
+      <column caption="Target Date" datatype="string" name="[target_date]" role="dimension" type="nominal" />
+      <column caption="Forecast Date" datatype="string" name="[forecast_date]" role="dimension" type="nominal" />
+      <column caption="Forecast Horizon Days" datatype="integer" name="[forecast_horizon_days]" role="measure" type="quantitative" />
+      <column caption="Measure" datatype="string" name="[series_name]" role="dimension" type="nominal" />
+      <column caption="Series Order" datatype="integer" name="[series_order]" role="measure" type="quantitative" />
+      <column caption="Net Revenue ($)" datatype="real" name="[net_revenue_dollars]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <layout dim-ordering="alphabetic" measure-ordering="alphabetic" show-structure="true" />
+      <object-graph>
+        <objects>
+          <object caption="Revenue Series" id="REVENUE_SERIES_TABLE">
+            <properties context="">
+              <relation connection="textscan.orlando_revenue_series" name="revenue_series.csv" table="[revenue_series#csv]" type="table">
+                <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+                  <column datatype="string" name="target_date" ordinal="0" />
+                  <column datatype="string" name="forecast_date" ordinal="1" />
+                  <column datatype="integer" name="forecast_horizon_days" ordinal="2" />
+                  <column datatype="string" name="series_name" ordinal="3" />
+                  <column datatype="integer" name="series_order" ordinal="4" />
+                  <column datatype="real" name="net_revenue_dollars" ordinal="5" />
+                </columns>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
+    <datasource caption="Accuracy" inline="true" name="federated.orlando_accuracy" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Accuracy" name="textscan.orlando_accuracy">
+            <connection class="textscan" directory="data" filename="accuracy.csv" password="" server="" />
+          </named-connection>
+        </named-connections>
+        <relation connection="textscan.orlando_accuracy" name="accuracy.csv" table="[accuracy#csv]" type="table">
+          <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+            <column datatype="string" name="forecast_domain" ordinal="0" />
+            <column datatype="string" name="forecast_range" ordinal="1" />
+            <column datatype="integer" name="observations" ordinal="2" />
+            <column datatype="real" name="demand_mae_tickets" ordinal="3" />
+            <column datatype="real" name="revenue_wape_ratio" ordinal="4" />
+            <column datatype="real" name="interval_coverage_pct" ordinal="5" />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class="column">
+            <remote-name>forecast_domain</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[forecast_domain]</local-name>
+            <parent-name>[accuracy.csv]</parent-name>
+            <remote-alias>forecast_domain</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[ACCURACY_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>forecast_range</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[forecast_range]</local-name>
+            <parent-name>[accuracy.csv]</parent-name>
+            <remote-alias>forecast_range</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[ACCURACY_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>observations</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[observations]</local-name>
+            <parent-name>[accuracy.csv]</parent-name>
+            <remote-alias>observations</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[ACCURACY_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>demand_mae_tickets</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[demand_mae_tickets]</local-name>
+            <parent-name>[accuracy.csv]</parent-name>
+            <remote-alias>demand_mae_tickets</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[ACCURACY_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_wape_ratio</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[revenue_wape_ratio]</local-name>
+            <parent-name>[accuracy.csv]</parent-name>
+            <remote-alias>revenue_wape_ratio</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[ACCURACY_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>interval_coverage_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[interval_coverage_pct]</local-name>
+            <parent-name>[accuracy.csv]</parent-name>
+            <remote-alias>interval_coverage_pct</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[ACCURACY_TABLE]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled="yes" />
+      <column caption="accuracy.csv" datatype="table" name="[__tableau_internal_object_id__].[ACCURACY_TABLE]" role="measure" type="quantitative" />
+      <column caption="Forecast Domain" datatype="string" name="[forecast_domain]" role="dimension" type="nominal" />
+      <column caption="Forecast Range" datatype="string" name="[forecast_range]" role="dimension" type="nominal" />
+      <column caption="Observations" datatype="integer" name="[observations]" role="measure" type="quantitative" />
+      <column caption="Typical Daily Ticket Error (MAE)" datatype="real" name="[demand_mae_tickets]" role="measure" type="quantitative" default-format="n0.0" />
+      <column caption="Revenue Forecast Error (WAPE)" datatype="real" name="[revenue_wape_ratio]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Interval Coverage Pct" datatype="real" name="[interval_coverage_pct]" role="measure" type="quantitative" default-format="n0.0" />
+      <layout dim-ordering="alphabetic" measure-ordering="alphabetic" show-structure="true" />
+      <object-graph>
+        <objects>
+          <object caption="Accuracy" id="ACCURACY_TABLE">
+            <properties context="">
+              <relation connection="textscan.orlando_accuracy" name="accuracy.csv" table="[accuracy#csv]" type="table">
+                <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+                  <column datatype="string" name="forecast_domain" ordinal="0" />
+                  <column datatype="string" name="forecast_range" ordinal="1" />
+                  <column datatype="integer" name="observations" ordinal="2" />
+                  <column datatype="real" name="demand_mae_tickets" ordinal="3" />
+                  <column datatype="real" name="revenue_wape_ratio" ordinal="4" />
+                  <column datatype="real" name="interval_coverage_pct" ordinal="5" />
+                </columns>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
+    <datasource caption="Campaign" inline="true" name="federated.orlando_campaign" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Campaign" name="textscan.orlando_campaign">
+            <connection class="textscan" directory="data" filename="campaign.csv" password="" server="" />
+          </named-connection>
+        </named-connections>
+        <relation connection="textscan.orlando_campaign" name="campaign.csv" table="[campaign#csv]" type="table">
+          <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+            <column datatype="string" name="outcome_name" ordinal="0" />
+            <column datatype="string" name="outcome_label" ordinal="1" />
+            <column datatype="string" name="estimator_name" ordinal="2" />
+            <column datatype="string" name="estimator_label" ordinal="3" />
+            <column datatype="string" name="period_name" ordinal="4" />
+            <column datatype="integer" name="observations" ordinal="5" />
+            <column datatype="real" name="estimate_value" ordinal="6" />
+            <column datatype="real" name="estimate_pct" ordinal="7" />
+            <column datatype="real" name="estimate_ratio" ordinal="8" />
+            <column datatype="real" name="lower_bound" ordinal="9" />
+            <column datatype="real" name="upper_bound" ordinal="10" />
+            <column datatype="real" name="p_value" ordinal="11" />
+            <column datatype="boolean" name="interval_excludes_zero" ordinal="12" />
+            <column datatype="real" name="estimated_incremental_net_revenue" ordinal="13" />
+            <column datatype="real" name="marketing_spend" ordinal="14" />
+            <column datatype="real" name="associated_return_after_spend" ordinal="15" />
+            <column datatype="string" name="revenue_evidence" ordinal="16" />
+            <column datatype="string" name="ticket_yield_evidence" ordinal="17" />
+            <column datatype="boolean" name="causal_claim_allowed" ordinal="18" />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class="column">
+            <remote-name>outcome_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[outcome_name]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>outcome_name</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>outcome_label</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[outcome_label]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>outcome_label</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>estimator_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[estimator_name]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>estimator_name</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>estimator_label</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[estimator_label]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>estimator_label</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>period_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[period_name]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>period_name</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>observations</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[observations]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>observations</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>estimate_value</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[estimate_value]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>estimate_value</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>estimate_pct</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[estimate_pct]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>estimate_pct</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>estimate_ratio</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[estimate_ratio]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>estimate_ratio</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>lower_bound</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[lower_bound]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>lower_bound</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>upper_bound</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[upper_bound]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>upper_bound</remote-alias>
+            <ordinal>10</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>p_value</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[p_value]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>p_value</remote-alias>
+            <ordinal>11</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>interval_excludes_zero</remote-name>
+            <remote-type>11</remote-type>
+            <local-name>[interval_excludes_zero]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>interval_excludes_zero</remote-alias>
+            <ordinal>12</ordinal>
+            <local-type>boolean</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>estimated_incremental_net_revenue</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[estimated_incremental_net_revenue]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>estimated_incremental_net_revenue</remote-alias>
+            <ordinal>13</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>marketing_spend</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[marketing_spend]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>marketing_spend</remote-alias>
+            <ordinal>14</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>associated_return_after_spend</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[associated_return_after_spend]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>associated_return_after_spend</remote-alias>
+            <ordinal>15</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>revenue_evidence</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[revenue_evidence]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>revenue_evidence</remote-alias>
+            <ordinal>16</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>ticket_yield_evidence</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[ticket_yield_evidence]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>ticket_yield_evidence</remote-alias>
+            <ordinal>17</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>causal_claim_allowed</remote-name>
+            <remote-type>11</remote-type>
+            <local-name>[causal_claim_allowed]</local-name>
+            <parent-name>[campaign.csv]</parent-name>
+            <remote-alias>causal_claim_allowed</remote-alias>
+            <ordinal>18</ordinal>
+            <local-type>boolean</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[CAMPAIGN_TABLE]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled="yes" />
+      <column caption="campaign.csv" datatype="table" name="[__tableau_internal_object_id__].[CAMPAIGN_TABLE]" role="measure" type="quantitative" />
+      <column caption="Outcome Name" datatype="string" name="[outcome_name]" role="dimension" type="nominal" />
+      <column caption="Outcome Label" datatype="string" name="[outcome_label]" role="dimension" type="nominal" />
+      <column caption="Estimator Name" datatype="string" name="[estimator_name]" role="dimension" type="nominal" />
+      <column caption="Comparison" datatype="string" name="[estimator_label]" role="dimension" type="nominal" />
+      <column caption="Period Name" datatype="string" name="[period_name]" role="dimension" type="nominal" />
+      <column caption="Observations" datatype="integer" name="[observations]" role="measure" type="quantitative" />
+      <column caption="Estimate Value" datatype="real" name="[estimate_value]" role="measure" type="quantitative" />
+      <column caption="Revenue Difference (%)" datatype="real" name="[estimate_pct]" role="measure" type="quantitative" default-format="n0.0" />
+      <column caption="Revenue Difference (%)" datatype="real" name="[estimate_ratio]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Lower Bound" datatype="real" name="[lower_bound]" role="measure" type="quantitative" />
+      <column caption="Upper Bound" datatype="real" name="[upper_bound]" role="measure" type="quantitative" />
+      <column caption="P Value" datatype="real" name="[p_value]" role="measure" type="quantitative" />
+      <column caption="Interval Excludes Zero" datatype="boolean" name="[interval_excludes_zero]" role="dimension" type="nominal" />
+      <column caption="Estimated Incremental Net Revenue" datatype="real" name="[estimated_incremental_net_revenue]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Marketing Spend" datatype="real" name="[marketing_spend]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Associated Return After Spend" datatype="real" name="[associated_return_after_spend]" role="measure" type="quantitative" default-format="n0.00" />
+      <column caption="Revenue Evidence" datatype="string" name="[revenue_evidence]" role="dimension" type="nominal" />
+      <column caption="Ticket Yield Evidence" datatype="string" name="[ticket_yield_evidence]" role="dimension" type="nominal" />
+      <column caption="Causal Claim Allowed" datatype="boolean" name="[causal_claim_allowed]" role="dimension" type="nominal" />
+      <layout dim-ordering="alphabetic" measure-ordering="alphabetic" show-structure="true" />
+      <object-graph>
+        <objects>
+          <object caption="Campaign" id="CAMPAIGN_TABLE">
+            <properties context="">
+              <relation connection="textscan.orlando_campaign" name="campaign.csv" table="[campaign#csv]" type="table">
+                <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+                  <column datatype="string" name="outcome_name" ordinal="0" />
+                  <column datatype="string" name="outcome_label" ordinal="1" />
+                  <column datatype="string" name="estimator_name" ordinal="2" />
+                  <column datatype="string" name="estimator_label" ordinal="3" />
+                  <column datatype="string" name="period_name" ordinal="4" />
+                  <column datatype="integer" name="observations" ordinal="5" />
+                  <column datatype="real" name="estimate_value" ordinal="6" />
+                  <column datatype="real" name="estimate_pct" ordinal="7" />
+                  <column datatype="real" name="estimate_ratio" ordinal="8" />
+                  <column datatype="real" name="lower_bound" ordinal="9" />
+                  <column datatype="real" name="upper_bound" ordinal="10" />
+                  <column datatype="real" name="p_value" ordinal="11" />
+                  <column datatype="boolean" name="interval_excludes_zero" ordinal="12" />
+                  <column datatype="real" name="estimated_incremental_net_revenue" ordinal="13" />
+                  <column datatype="real" name="marketing_spend" ordinal="14" />
+                  <column datatype="real" name="associated_return_after_spend" ordinal="15" />
+                  <column datatype="string" name="revenue_evidence" ordinal="16" />
+                  <column datatype="string" name="ticket_yield_evidence" ordinal="17" />
+                  <column datatype="boolean" name="causal_claim_allowed" ordinal="18" />
+                </columns>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
+    <datasource caption="Product" inline="true" name="federated.orlando_product" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Product" name="textscan.orlando_product">
+            <connection class="textscan" directory="data" filename="product.csv" password="" server="" />
+          </named-connection>
+        </named-connections>
+        <relation connection="textscan.orlando_product" name="product.csv" table="[product#csv]" type="table">
+          <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+            <column datatype="string" name="target_date" ordinal="0" />
+            <column datatype="string" name="product_name" ordinal="1" />
+            <column datatype="string" name="ticket_tier" ordinal="2" />
+            <column datatype="real" name="base_price" ordinal="3" />
+            <column datatype="real" name="predicted_product_share" ordinal="4" />
+            <column datatype="real" name="predicted_product_demand" ordinal="5" />
+            <column datatype="real" name="predicted_product_net_yield" ordinal="6" />
+            <column datatype="real" name="predicted_product_net_revenue" ordinal="7" />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class="column">
+            <remote-name>target_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[target_date]</local-name>
+            <parent-name>[product.csv]</parent-name>
+            <remote-alias>target_date</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PRODUCT_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>product_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[product_name]</local-name>
+            <parent-name>[product.csv]</parent-name>
+            <remote-alias>product_name</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PRODUCT_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>ticket_tier</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[ticket_tier]</local-name>
+            <parent-name>[product.csv]</parent-name>
+            <remote-alias>ticket_tier</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PRODUCT_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>base_price</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[base_price]</local-name>
+            <parent-name>[product.csv]</parent-name>
+            <remote-alias>base_price</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PRODUCT_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>predicted_product_share</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[predicted_product_share]</local-name>
+            <parent-name>[product.csv]</parent-name>
+            <remote-alias>predicted_product_share</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PRODUCT_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>predicted_product_demand</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[predicted_product_demand]</local-name>
+            <parent-name>[product.csv]</parent-name>
+            <remote-alias>predicted_product_demand</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PRODUCT_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>predicted_product_net_yield</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[predicted_product_net_yield]</local-name>
+            <parent-name>[product.csv]</parent-name>
+            <remote-alias>predicted_product_net_yield</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PRODUCT_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>predicted_product_net_revenue</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[predicted_product_net_revenue]</local-name>
+            <parent-name>[product.csv]</parent-name>
+            <remote-alias>predicted_product_net_revenue</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[PRODUCT_TABLE]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled="yes" />
+      <column caption="product.csv" datatype="table" name="[__tableau_internal_object_id__].[PRODUCT_TABLE]" role="measure" type="quantitative" />
+      <column caption="Target Date" datatype="string" name="[target_date]" role="dimension" type="nominal" />
+      <column caption="Ticket Type" datatype="string" name="[product_name]" role="dimension" type="nominal" />
+      <column caption="Ticket Tier" datatype="string" name="[ticket_tier]" role="dimension" type="nominal" />
+      <column caption="Base Price" datatype="real" name="[base_price]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Predicted Product Share" datatype="real" name="[predicted_product_share]" role="measure" type="quantitative" default-format="p0.0%" />
+      <column caption="Predicted Product Demand" datatype="real" name="[predicted_product_demand]" role="measure" type="quantitative" />
+      <column caption="Predicted Product Net Yield" datatype="real" name="[predicted_product_net_yield]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="30-Day Net Revenue ($)" datatype="real" name="[predicted_product_net_revenue]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <layout dim-ordering="alphabetic" measure-ordering="alphabetic" show-structure="true" />
+      <object-graph>
+        <objects>
+          <object caption="Product" id="PRODUCT_TABLE">
+            <properties context="">
+              <relation connection="textscan.orlando_product" name="product.csv" table="[product#csv]" type="table">
+                <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+                  <column datatype="string" name="target_date" ordinal="0" />
+                  <column datatype="string" name="product_name" ordinal="1" />
+                  <column datatype="string" name="ticket_tier" ordinal="2" />
+                  <column datatype="real" name="base_price" ordinal="3" />
+                  <column datatype="real" name="predicted_product_share" ordinal="4" />
+                  <column datatype="real" name="predicted_product_demand" ordinal="5" />
+                  <column datatype="real" name="predicted_product_net_yield" ordinal="6" />
+                  <column datatype="real" name="predicted_product_net_revenue" ordinal="7" />
+                </columns>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name="KPI - Forecast Demand">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Expected 30-Day Demand</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Planning" name="federated.orlando_planning" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_planning">
+            <column caption="Predicted Demand" datatype="real" name="[predicted_demand]" role="measure" type="quantitative" />
+            <column-instance column="[predicted_demand]" derivation="Sum" name="[sum:predicted_demand:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_planning].[sum:predicted_demand:qk]" />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[sum:predicted_demand:qk]&gt; tickets</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element="cell">
+                <format attr="text-align" value="center" />
+                <format attr="vertical-align" value="center" />
+              </style-rule>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid="{D97D87D2-825B-4CDB-A55E-2FF9583A850D}" />
+    </worksheet>
+    <worksheet name="KPI - Forecast Revenue">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Expected 30-Day Net Revenue</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Planning" name="federated.orlando_planning" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_planning">
+            <column caption="Predicted Net Revenue" datatype="real" name="[predicted_net_revenue]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+            <column-instance column="[predicted_net_revenue]" derivation="Sum" name="[sum:predicted_net_revenue:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_planning].[sum:predicted_net_revenue:qk]" />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">$&lt;[federated.orlando_planning].[sum:predicted_net_revenue:qk]&gt;</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element="cell">
+                <format attr="text-align" value="center" />
+                <format attr="vertical-align" value="center" />
+              </style-rule>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid="{34D65C5B-29C9-4990-9E6D-28BE6EC347F1}" />
+    </worksheet>
+    <worksheet name="KPI - Peak Capacity Use">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Peak Capacity Used</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Planning" name="federated.orlando_planning" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_planning">
+            <column caption="Peak Capacity Used" datatype="real" name="[peak_capacity_utilization]" role="measure" type="quantitative" default-format="p0.0%" />
+            <column-instance column="[peak_capacity_utilization]" derivation="Max" name="[max:peak_capacity_utilization:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_planning].[max:peak_capacity_utilization:qk]" />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[max:peak_capacity_utilization:qk]&gt;</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element="cell">
+                <format attr="text-align" value="center" />
+                <format attr="vertical-align" value="center" />
+              </style-rule>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid="{F581DB99-3938-4FA4-B6E1-3EE4AF40571C}" />
+    </worksheet>
+    <worksheet name="KPI - Review Dates">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Dates Needing Review</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Planning" name="federated.orlando_planning" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_planning">
+            <column caption="Target Date" datatype="string" name="[target_date]" role="dimension" type="nominal" />
+            <column-instance column="[target_date]" derivation="Count" name="[cnt:target_date:qk]" pivot="key" type="quantitative" />
+            <column caption="Decision Scope" datatype="string" name="[decision_scope]" role="dimension" type="nominal" />
+            <column-instance column="[decision_scope]" derivation="None" name="[none:decision_scope:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_planning].[none:decision_scope:nk]">
+            <groupfilter function="member" level="[none:decision_scope:nk]" member="&quot;Review&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_planning].[cnt:target_date:qk]" />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[cnt:target_date:qk]&gt; days</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element="cell">
+                <format attr="text-align" value="center" />
+                <format attr="vertical-align" value="center" />
+              </style-rule>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid="{0925E69C-BED6-4393-B8F2-93FAD908BDEC}" />
+    </worksheet>
+    <worksheet name="Daily Demand Plan">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Daily Ticket Demand versus Plan and Capacity</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Demand Series" name="federated.orlando_demand_series" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_demand_series">
+            <column caption="Forecast Date" datatype="string" name="[forecast_date]" role="dimension" type="nominal" />
+            <column-instance column="[forecast_date]" derivation="None" name="[none:forecast_date:nk]" pivot="key" type="nominal" />
+            <column caption="Tickets" datatype="real" name="[tickets]" role="measure" type="quantitative" />
+            <column-instance column="[tickets]" derivation="Sum" name="[sum:tickets:qk]" pivot="key" type="quantitative" />
+            <column caption="Measure" datatype="string" name="[series_name]" role="dimension" type="nominal" />
+            <column-instance column="[series_name]" derivation="None" name="[none:series_name:nk]" pivot="key" type="nominal" />
+            <column caption="Series Scope" datatype="string" name="[series_scope]" role="dimension" type="nominal" />
+            <column-instance column="[series_scope]" derivation="None" name="[none:series_scope:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_demand_series].[none:series_scope:nk]">
+            <groupfilter function="member" level="[none:series_scope:nk]" member="&quot;Planning&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="axis">
+            <format attr="title" class="0" field="[federated.orlando_demand_series].[none:forecast_date:nk]" scope="cols" value="Forecast Date" />
+            <format attr="title" class="0" field="[federated.orlando_demand_series].[sum:tickets:qk]" scope="rows" value="Tickets" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <encodings>
+              <color column="[federated.orlando_demand_series].[none:series_name:nk]" />
+            </encodings>
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#1F8A89" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_demand_series].[sum:tickets:qk]</rows>
+        <cols>[federated.orlando_demand_series].[none:forecast_date:nk]</cols>
+      </table>
+      <simple-id uuid="{D010E3D9-78BA-46FC-A090-55CF5C528A63}" />
+    </worksheet>
+    <worksheet name="Decision Dates">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">What to Do Differently</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Planning" name="federated.orlando_planning" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_planning">
+            <column caption="Date" datatype="string" name="[short_date]" role="dimension" type="nominal" />
+            <column-instance column="[short_date]" derivation="None" name="[none:short_date:nk]" pivot="key" type="nominal" />
+            <column caption="Recommended Action" datatype="string" name="[decision_label]" role="dimension" type="nominal" />
+            <column-instance column="[decision_label]" derivation="None" name="[none:decision_label:nk]" pivot="key" type="nominal" />
+            <column caption="Decision Scope" datatype="string" name="[decision_scope]" role="dimension" type="nominal" />
+            <column-instance column="[decision_scope]" derivation="None" name="[none:decision_scope:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_planning].[none:decision_scope:nk]">
+            <groupfilter function="member" level="[none:decision_scope:nk]" member="&quot;Review&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_planning].[none:decision_label:nk]" />
+            </encodings>
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_planning].[none:short_date:nk]</rows>
+        <cols />
+      </table>
+      <simple-id uuid="{75D58EB6-53AF-457B-BB99-6C966934758C}" />
+    </worksheet>
+    <worksheet name="Daily Revenue Plan">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Daily Net Revenue Forecast, Range, and Plan</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Revenue Series" name="federated.orlando_revenue_series" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_revenue_series">
+            <column caption="Forecast Date" datatype="string" name="[forecast_date]" role="dimension" type="nominal" />
+            <column-instance column="[forecast_date]" derivation="None" name="[none:forecast_date:nk]" pivot="key" type="nominal" />
+            <column caption="Net Revenue ($)" datatype="real" name="[net_revenue_dollars]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+            <column-instance column="[net_revenue_dollars]" derivation="Sum" name="[sum:net_revenue_dollars:qk]" pivot="key" type="quantitative" />
+            <column caption="Measure" datatype="string" name="[series_name]" role="dimension" type="nominal" />
+            <column-instance column="[series_name]" derivation="None" name="[none:series_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="axis">
+            <format attr="title" class="0" field="[federated.orlando_revenue_series].[none:forecast_date:nk]" scope="cols" value="Forecast Date" />
+            <format attr="title" class="0" field="[federated.orlando_revenue_series].[sum:net_revenue_dollars:qk]" scope="rows" value="Net Revenue ($)" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <encodings>
+              <color column="[federated.orlando_revenue_series].[none:series_name:nk]" />
+            </encodings>
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#1F8A89" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_revenue_series].[sum:net_revenue_dollars:qk]</rows>
+        <cols>[federated.orlando_revenue_series].[none:forecast_date:nk]</cols>
+      </table>
+      <simple-id uuid="{3289636A-9632-4C45-8348-8D59BEA2A0BB}" />
+    </worksheet>
+    <worksheet name="KPI - Campaign Difference">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Campaign-Day Revenue Difference</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Campaign" name="federated.orlando_campaign" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_campaign">
+            <column caption="Revenue Difference (%)" datatype="real" name="[estimate_ratio]" role="measure" type="quantitative" default-format="p0.0%" />
+            <column-instance column="[estimate_ratio]" derivation="Min" name="[min:estimate_ratio:qk]" pivot="key" type="quantitative" />
+            <column caption="Outcome Name" datatype="string" name="[outcome_name]" role="dimension" type="nominal" />
+            <column-instance column="[outcome_name]" derivation="None" name="[none:outcome_name:nk]" pivot="key" type="nominal" />
+            <column caption="Estimator Name" datatype="string" name="[estimator_name]" role="dimension" type="nominal" />
+            <column-instance column="[estimator_name]" derivation="None" name="[none:estimator_name:nk]" pivot="key" type="nominal" />
+            <column caption="Period Name" datatype="string" name="[period_name]" role="dimension" type="nominal" />
+            <column-instance column="[period_name]" derivation="None" name="[none:period_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_campaign].[none:outcome_name:nk]">
+            <groupfilter function="member" level="[none:outcome_name:nk]" member="&quot;net_revenue&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <filter class="categorical" column="[federated.orlando_campaign].[none:estimator_name:nk]">
+            <groupfilter function="member" level="[none:estimator_name:nk]" member="&quot;matched_block_bootstrap&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <filter class="categorical" column="[federated.orlando_campaign].[none:period_name:nk]">
+            <groupfilter function="member" level="[none:period_name:nk]" member="&quot;campaign_window&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_campaign].[min:estimate_ratio:qk]" />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_campaign].[min:estimate_ratio:qk]&gt;</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element="cell">
+                <format attr="text-align" value="center" />
+                <format attr="vertical-align" value="center" />
+              </style-rule>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid="{9CECA0E7-CDE0-42D0-B449-693F3999A877}" />
+    </worksheet>
+    <worksheet name="KPI - Marketing Net Gain">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Net Gain per $1 Marketing Spend</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Campaign" name="federated.orlando_campaign" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_campaign">
+            <column caption="Associated Return After Spend" datatype="real" name="[associated_return_after_spend]" role="measure" type="quantitative" default-format="n0.00" />
+            <column-instance column="[associated_return_after_spend]" derivation="Min" name="[min:associated_return_after_spend:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_campaign].[min:associated_return_after_spend:qk]" />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">$&lt;[federated.orlando_campaign].[min:associated_return_after_spend:qk]&gt;</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element="cell">
+                <format attr="text-align" value="center" />
+                <format attr="vertical-align" value="center" />
+              </style-rule>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid="{9C37F7E6-510C-40A6-8111-CE84F7DF9BD3}" />
+    </worksheet>
+    <worksheet name="KPI - Demand Error">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Typical Daily Demand Error (MAE)</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Planning" name="federated.orlando_planning" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_planning">
+            <column caption="Selected Demand Mae" datatype="real" name="[selected_demand_mae]" role="measure" type="quantitative" default-format="n0.0" />
+            <column-instance column="[selected_demand_mae]" derivation="Min" name="[min:selected_demand_mae:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_planning].[min:selected_demand_mae:qk]" />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[min:selected_demand_mae:qk]&gt; tickets</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element="cell">
+                <format attr="text-align" value="center" />
+                <format attr="vertical-align" value="center" />
+              </style-rule>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid="{73600B1F-69EC-4A28-9A74-CFED5570DC3D}" />
+    </worksheet>
+    <worksheet name="KPI - Revenue Error">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Revenue Forecast Error (WAPE)</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Planning" name="federated.orlando_planning" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_planning">
+            <column caption="Selected Revenue Wape Pct" datatype="real" name="[selected_revenue_wape_pct]" role="measure" type="quantitative" default-format="n0.0" />
+            <column-instance column="[selected_revenue_wape_pct]" derivation="Min" name="[min:selected_revenue_wape_pct:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <aggregation value="true" />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Automatic" />
+            <encodings>
+              <text column="[federated.orlando_planning].[min:selected_revenue_wape_pct:qk]" />
+            </encodings>
+            <customized-label>
+              <formatted-text>
+                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[min:selected_revenue_wape_pct:qk]&gt;%</run>
+              </formatted-text>
+            </customized-label>
+            <style>
+              <style-rule element="cell">
+                <format attr="text-align" value="center" />
+                <format attr="vertical-align" value="center" />
+              </style-rule>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+      <simple-id uuid="{A28B62CB-4FCE-46CB-82E0-567D826E57DC}" />
+    </worksheet>
+    <worksheet name="Product Revenue Mix">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Which Ticket Types Generate the 30-Day Revenue Forecast?</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Product" name="federated.orlando_product" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_product">
+            <column caption="Ticket Type" datatype="string" name="[product_name]" role="dimension" type="nominal" />
+            <column-instance column="[product_name]" derivation="None" name="[none:product_name:nk]" pivot="key" type="nominal" />
+            <column caption="30-Day Net Revenue ($)" datatype="real" name="[predicted_product_net_revenue]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+            <column-instance column="[predicted_product_net_revenue]" derivation="Sum" name="[sum:predicted_product_net_revenue:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="axis">
+            <format attr="title" class="0" field="[federated.orlando_product].[sum:predicted_product_net_revenue:qk]" scope="cols" value="30-Day Net Revenue ($)" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="width" field="[federated.orlando_product].[none:product_name:nk]" value="170" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Bar" />
+            <encodings>
+              <text column="[federated.orlando_product].[sum:predicted_product_net_revenue:qk]" />
+            </encodings>
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+                <format attr="mark-color" value="#1F8A89" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_product].[none:product_name:nk]</rows>
+        <cols>[federated.orlando_product].[sum:predicted_product_net_revenue:qk]</cols>
+      </table>
+      <simple-id uuid="{83127F51-985C-45AC-8C62-CF472C608424}" />
+    </worksheet>
+    <worksheet name="Campaign Comparison">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Campaign Days Earned More than Comparable Days</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Campaign" name="federated.orlando_campaign" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_campaign">
+            <column caption="Comparison" datatype="string" name="[estimator_label]" role="dimension" type="nominal" />
+            <column-instance column="[estimator_label]" derivation="None" name="[none:estimator_label:nk]" pivot="key" type="nominal" />
+            <column caption="Revenue Difference (%)" datatype="real" name="[estimate_ratio]" role="measure" type="quantitative" default-format="p0.0%" />
+            <column-instance column="[estimate_ratio]" derivation="Min" name="[min:estimate_ratio:qk]" pivot="key" type="quantitative" />
+            <column caption="Outcome Name" datatype="string" name="[outcome_name]" role="dimension" type="nominal" />
+            <column-instance column="[outcome_name]" derivation="None" name="[none:outcome_name:nk]" pivot="key" type="nominal" />
+            <column caption="Period Name" datatype="string" name="[period_name]" role="dimension" type="nominal" />
+            <column-instance column="[period_name]" derivation="None" name="[none:period_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_campaign].[none:outcome_name:nk]">
+            <groupfilter function="member" level="[none:outcome_name:nk]" member="&quot;net_revenue&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <filter class="categorical" column="[federated.orlando_campaign].[none:period_name:nk]">
+            <groupfilter function="member" level="[none:period_name:nk]" member="&quot;campaign_window&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="axis">
+            <format attr="title" class="0" field="[federated.orlando_campaign].[min:estimate_ratio:qk]" scope="cols" value="Revenue Difference" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="width" field="[federated.orlando_campaign].[none:estimator_label:nk]" value="210" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Bar" />
+            <encodings>
+              <text column="[federated.orlando_campaign].[min:estimate_ratio:qk]" />
+            </encodings>
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+                <format attr="mark-color" value="#1F8A89" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_campaign].[none:estimator_label:nk]</rows>
+        <cols>[federated.orlando_campaign].[min:estimate_ratio:qk]</cols>
+      </table>
+      <simple-id uuid="{5FC9B3BA-8537-4AA6-9736-97DAEDAC472A}" />
+    </worksheet>
+    <worksheet name="Demand Error by Range">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Typical Daily Ticket Error by Forecast Range (MAE)</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Accuracy" name="federated.orlando_accuracy" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_accuracy">
+            <column caption="Forecast Range" datatype="string" name="[forecast_range]" role="dimension" type="nominal" />
+            <column-instance column="[forecast_range]" derivation="None" name="[none:forecast_range:nk]" pivot="key" type="nominal" />
+            <column caption="Typical Daily Ticket Error (MAE)" datatype="real" name="[demand_mae_tickets]" role="measure" type="quantitative" default-format="n0.0" />
+            <column-instance column="[demand_mae_tickets]" derivation="Min" name="[min:demand_mae_tickets:qk]" pivot="key" type="quantitative" />
+            <column caption="Forecast Domain" datatype="string" name="[forecast_domain]" role="dimension" type="nominal" />
+            <column-instance column="[forecast_domain]" derivation="None" name="[none:forecast_domain:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_accuracy].[none:forecast_domain:nk]">
+            <groupfilter function="member" level="[none:forecast_domain:nk]" member="&quot;Demand&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="axis">
+            <format attr="title" class="0" field="[federated.orlando_accuracy].[min:demand_mae_tickets:qk]" scope="cols" value="Typical Daily Error (Tickets)" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="width" field="[federated.orlando_accuracy].[none:forecast_range:nk]" value="150" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Bar" />
+            <encodings>
+              <text column="[federated.orlando_accuracy].[min:demand_mae_tickets:qk]" />
+            </encodings>
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+                <format attr="mark-color" value="#1F8A89" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_accuracy].[none:forecast_range:nk]</rows>
+        <cols>[federated.orlando_accuracy].[min:demand_mae_tickets:qk]</cols>
+      </table>
+      <simple-id uuid="{8907FDF5-DD09-429E-85E0-A37108EA0052}" />
+    </worksheet>
+    <worksheet name="Revenue Error by Range">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Revenue Forecast Error by Forecast Range (WAPE)</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Accuracy" name="federated.orlando_accuracy" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_accuracy">
+            <column caption="Forecast Range" datatype="string" name="[forecast_range]" role="dimension" type="nominal" />
+            <column-instance column="[forecast_range]" derivation="None" name="[none:forecast_range:nk]" pivot="key" type="nominal" />
+            <column caption="Revenue Forecast Error (WAPE)" datatype="real" name="[revenue_wape_ratio]" role="measure" type="quantitative" default-format="p0.0%" />
+            <column-instance column="[revenue_wape_ratio]" derivation="Min" name="[min:revenue_wape_ratio:qk]" pivot="key" type="quantitative" />
+            <column caption="Forecast Domain" datatype="string" name="[forecast_domain]" role="dimension" type="nominal" />
+            <column-instance column="[forecast_domain]" derivation="None" name="[none:forecast_domain:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_accuracy].[none:forecast_domain:nk]">
+            <groupfilter function="member" level="[none:forecast_domain:nk]" member="&quot;Revenue&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="axis">
+            <format attr="title" class="0" field="[federated.orlando_accuracy].[min:revenue_wape_ratio:qk]" scope="cols" value="Revenue Error (WAPE)" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="width" field="[federated.orlando_accuracy].[none:forecast_range:nk]" value="150" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Bar" />
+            <encodings>
+              <text column="[federated.orlando_accuracy].[min:revenue_wape_ratio:qk]" />
+            </encodings>
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-labels-show" value="true" />
+                <format attr="mark-color" value="#1F8A89" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_accuracy].[none:forecast_range:nk]</rows>
+        <cols>[federated.orlando_accuracy].[min:revenue_wape_ratio:qk]</cols>
+      </table>
+      <simple-id uuid="{5208BBB9-020B-4BC4-A111-F82D7E84A726}" />
+    </worksheet>
+  </worksheets>
+  <dashboards>
+    <dashboard enable-sort-zone-taborder="true" name="30-Day Outlook &amp; Actions">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run bold="true" fontcolor="#17324D" fontname="Tableau Medium" fontsize="22">30-Day Plan: Capacity Is Sufficient; 2 Dates Need Review</run>
+            <run fontcolor="#506475" fontname="Tableau Light" fontsize="11">  |  Use this page to plan daily staffing, protect price on strong days, and monitor revenue shortfalls.</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <size maxheight="800" maxwidth="1200" minheight="800" minwidth="1200" sizing-mode="fixed" />
+      <zones>
+        <zone h="100000" id="1" type-v2="layout-basic" w="100000" x="0" y="0">
+          <zone h="10000" id="2" type-v2="title" w="100000" x="0" y="0">
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#EAF2F8" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="3" name="KPI - Forecast Demand" w="25000" x="0" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="4" name="KPI - Forecast Revenue" w="25000" x="25000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="5" name="KPI - Peak Capacity Use" w="25000" x="50000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="6" name="KPI - Review Dates" w="25000" x="75000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="38000" id="7" name="Daily Demand Plan" w="65000" x="0" y="25000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="38000" id="8" name="Decision Dates" w="35000" x="65000" y="25000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="37000" id="9" name="Daily Revenue Plan" w="100000" x="0" y="63000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="5000" id="10" name="Daily Demand Plan" pane-specification-id="0" param="[federated.orlando_demand_series].[none:series_name:nk]" type-v2="color" w="41000" x="23000" y="31500">
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="background-color" value="#FFFFFF" />
+              <format attr="margin" value="3" />
+            </zone-style>
+          </zone>
+          <zone h="5000" id="11" name="Daily Revenue Plan" pane-specification-id="0" param="[federated.orlando_revenue_series].[none:series_name:nk]" type-v2="color" w="65000" x="34000" y="69500">
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="background-color" value="#FFFFFF" />
+              <format attr="margin" value="3" />
+            </zone-style>
+          </zone>
+          <zone-style>
+            <format attr="border-color" value="#D9E2E8" />
+            <format attr="border-style" value="solid" />
+            <format attr="border-width" value="1" />
+            <format attr="margin" value="6" />
+            <format attr="background-color" value="#F4F6F7" />
+          </zone-style>
+        </zone>
+      </zones>
+      <simple-id uuid="{0BB0D1B6-B9BB-407F-85C1-E1C8BFB4DE39}" />
+    </dashboard>
+    <dashboard enable-sort-zone-taborder="true" name="Revenue Drivers &amp; Confidence">
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run bold="true" fontcolor="#17324D" fontname="Tableau Medium" fontsize="22">Revenue Drivers &amp; Forecast Confidence</run>
+            <run fontcolor="#506475" fontname="Tableau Light" fontsize="11">  |  Use this page to see which products generate revenue, how campaign periods differ, and how error changes with lead time; campaign results are observational.</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <size maxheight="800" maxwidth="1200" minheight="800" minwidth="1200" sizing-mode="fixed" />
+      <zones>
+        <zone h="100000" id="1" type-v2="layout-basic" w="100000" x="0" y="0">
+          <zone h="10000" id="2" type-v2="title" w="100000" x="0" y="0">
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#EAF2F8" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="3" name="KPI - Campaign Difference" w="25000" x="0" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="4" name="KPI - Marketing Net Gain" w="25000" x="25000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="5" name="KPI - Demand Error" w="25000" x="50000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="6" name="KPI - Revenue Error" w="25000" x="75000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="40000" id="7" name="Product Revenue Mix" w="50000" x="0" y="25000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="40000" id="8" name="Campaign Comparison" w="50000" x="50000" y="25000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="35000" id="9" name="Demand Error by Range" w="50000" x="0" y="65000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="35000" id="10" name="Revenue Error by Range" w="50000" x="50000" y="65000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="solid" />
+              <format attr="border-width" value="1" />
+              <format attr="margin" value="6" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone-style>
+            <format attr="border-color" value="#D9E2E8" />
+            <format attr="border-style" value="solid" />
+            <format attr="border-width" value="1" />
+            <format attr="margin" value="6" />
+            <format attr="background-color" value="#F4F6F7" />
+          </zone-style>
+        </zone>
+      </zones>
+      <simple-id uuid="{397FB772-BEE3-481F-AFBC-F684D2521443}" />
+    </dashboard>
+  </dashboards>
+  <windows show-side-pane="false" source-height="135">
+    <window class="worksheet" name="KPI - Forecast Demand">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{910DEAA0-A86E-431A-831F-020D107A7C2A}" />
+    </window>
+    <window class="worksheet" name="KPI - Forecast Revenue">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{0D1A3FC9-C5FE-49E4-BA0A-E8047FCD1F33}" />
+    </window>
+    <window class="worksheet" name="KPI - Peak Capacity Use">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{67C7BA9F-1D30-4858-9EC2-0188157CB87E}" />
+    </window>
+    <window class="worksheet" name="KPI - Review Dates">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{4226481E-E3AA-4C45-AADD-BE63295852F8}" />
+    </window>
+    <window class="worksheet" name="Daily Demand Plan">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{4D2E75DE-A67E-4631-B78A-D7D0DAF60837}" />
+    </window>
+    <window class="worksheet" name="Decision Dates">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{92712DFC-85DA-4774-AD2A-731D3A363BA7}" />
+    </window>
+    <window class="worksheet" name="Daily Revenue Plan">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{2FBD5690-D722-4F2D-83D4-3613B37939D0}" />
+    </window>
+    <window class="worksheet" name="KPI - Campaign Difference">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{C2758A47-F27F-43A6-BEFA-7AFA0EC1EC0A}" />
+    </window>
+    <window class="worksheet" name="KPI - Marketing Net Gain">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{328935EE-421A-4019-9B28-7D58678E8516}" />
+    </window>
+    <window class="worksheet" name="KPI - Demand Error">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{8D37988C-8CA7-4DE2-BFC6-1D9D5FBE3CB5}" />
+    </window>
+    <window class="worksheet" name="KPI - Revenue Error">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{6BCC4044-B449-40E0-9426-AACE4E2FB992}" />
+    </window>
+    <window class="worksheet" name="Product Revenue Mix">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{6E7D3DA9-9DAD-4682-8950-5C8DBEF1F315}" />
+    </window>
+    <window class="worksheet" name="Campaign Comparison">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{3915DCD5-F917-49A0-AE2E-D8E6CC8044D9}" />
+    </window>
+    <window class="worksheet" name="Demand Error by Range">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{40E36300-1C51-493E-B96C-B5B3C1D6812E}" />
+    </window>
+    <window class="worksheet" name="Revenue Error by Range">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{DE3AA1B4-B6CF-43D3-BE5C-E2DA2175137A}" />
+    </window>
+    <window class="dashboard" name="30-Day Outlook &amp; Actions" maximized="true">
+      <viewpoints>
+        <viewpoint name="KPI - Forecast Demand">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="KPI - Forecast Revenue">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="KPI - Peak Capacity Use">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="KPI - Review Dates">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Daily Demand Plan">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Decision Dates">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Daily Revenue Plan">
+          <zoom type="entire-view" />
+        </viewpoint>
+      </viewpoints>
+      <active id="-1" />
+      <simple-id uuid="{2E01418B-B815-4EE3-B983-6FC5BAC6A72E}" />
+    </window>
+    <window class="dashboard" name="Revenue Drivers &amp; Confidence">
+      <viewpoints>
+        <viewpoint name="KPI - Campaign Difference">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="KPI - Marketing Net Gain">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="KPI - Demand Error">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="KPI - Revenue Error">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Product Revenue Mix">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Campaign Comparison">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Demand Error by Range">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Revenue Error by Range">
+          <zoom type="entire-view" />
+        </viewpoint>
+      </viewpoints>
+      <active id="-1" />
+      <simple-id uuid="{63E6C365-0F37-4C68-99D6-64E189220999}" />
+    </window>
+  </windows>
+</workbook>

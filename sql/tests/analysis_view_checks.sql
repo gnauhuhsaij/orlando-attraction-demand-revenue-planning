@@ -312,6 +312,109 @@ FROM vw_latest_revenue_forecast AS revenue
 JOIN vw_latest_demand_forecast AS demand USING (target_date)
 WHERE revenue.predicted_demand <> demand.predicted_demand;
 
+INSERT INTO analysis_view_failures
+WITH latest_run AS (
+    SELECT run_id, matched_pairs
+    FROM fact_campaign_analysis_run
+    ORDER BY created_at DESC, run_id DESC
+    LIMIT 1
+)
+SELECT
+    'latest_campaign_view_row_counts',
+    latest_run.run_id,
+    'Latest campaign views do not expose the complete selected run'
+FROM latest_run
+WHERE (SELECT count(*) FROM vw_latest_campaign_analysis_summary) <> 1
+   OR (SELECT count(*) FROM vw_latest_campaign_evaluation) <> 9
+   OR (SELECT count(*) FROM vw_latest_campaign_match)
+      <> latest_run.matched_pairs
+   OR (SELECT count(*) FROM vw_latest_campaign_balance) <> 6;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'latest_campaign_balance_failure',
+    covariate_name,
+    'Latest campaign match exceeds its declared balance threshold'
+FROM vw_latest_campaign_balance
+WHERE NOT balance_passed
+   OR matched_absolute_smd > balance_threshold;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'latest_campaign_summary_causal_claim',
+    run_id,
+    'Latest observational campaign summary incorrectly permits causality'
+FROM vw_latest_campaign_analysis_summary
+WHERE causal_claim_allowed;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'duplicate_business_action_date',
+    target_date::text,
+    'Business action view contains more than one row for a forecast date'
+FROM vw_daily_business_action_plan
+GROUP BY target_date
+HAVING count(*) > 1;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'business_action_row_count',
+    'vw_daily_business_action_plan',
+    'Business action view does not align one-to-one with the latest demand and revenue forecasts'
+WHERE (SELECT count(*) FROM vw_daily_business_action_plan)
+      <> (SELECT count(*) FROM vw_latest_demand_forecast)
+   OR (SELECT count(*) FROM vw_daily_business_action_plan)
+      <> (SELECT count(*) FROM vw_latest_revenue_forecast);
+
+INSERT INTO analysis_view_failures
+SELECT
+    'invalid_business_action_code',
+    target_date::text,
+    'Business action code is outside the documented decision set'
+FROM vw_daily_business_action_plan
+WHERE recommended_action_code NOT IN (
+    'protect_capacity',
+    'monitor_high_demand',
+    'revenue_recovery_review',
+    'targeted_promotion_review',
+    'maintain_plan'
+);
+
+INSERT INTO analysis_view_failures
+SELECT
+    'business_action_priority_mismatch',
+    target_date::text,
+    'Business priority does not match the selected action code'
+FROM vw_daily_business_action_plan
+WHERE business_action_priority <> CASE recommended_action_code
+    WHEN 'protect_capacity' THEN 1
+    WHEN 'monitor_high_demand' THEN 2
+    WHEN 'revenue_recovery_review' THEN 3
+    WHEN 'targeted_promotion_review' THEN 4
+    ELSE 6
+END;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'invalid_revenue_action_status',
+    target_date::text,
+    'Revenue status is inconsistent with its forecast interval and target'
+FROM vw_daily_business_action_plan
+WHERE revenue_status <> CASE
+    WHEN upper_revenue_variance_pct < 0 THEN 'revenue_shortfall_risk'
+    WHEN lower_revenue_variance_pct > 0 THEN 'revenue_upside'
+    WHEN forecast_revenue_variance_pct < 0 THEN 'below_target_watch'
+    ELSE 'revenue_on_plan'
+END;
+
+INSERT INTO analysis_view_failures
+SELECT
+    'business_action_campaign_causal_claim',
+    target_date::text,
+    'Daily action view must not expose historical campaign evidence as causal'
+FROM vw_daily_business_action_plan
+WHERE historical_campaign_causal_claim_allowed IS TRUE;
+
 SELECT
     check_name,
     count(*) AS failed_records
