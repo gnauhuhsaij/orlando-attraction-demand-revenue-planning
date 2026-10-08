@@ -35,7 +35,7 @@ The pipeline stores versioned forecasts, uncertainty intervals, backtest results
 
 ## Reproduce
 
-Requirements: Python 3.11+, PostgreSQL, and Tableau Desktop or Tableau Public.
+Requirements: Python 3.11+, PostgreSQL, Tableau Desktop or Tableau Public, and Microsoft Excel for the operating-plan deliverable.
 
 ```bash
 python -m venv .venv
@@ -53,4 +53,4 @@ createdb orlando_demand_revenue
 .venv/bin/python -m pytest
 ```
 
-The main deliverables are the SQL model and validation suite in [`sql/`](sql/), production pipelines in [`src/`](src/), review exports in [`outputs/`](outputs/), and the two-page Tableau decision story in [`tableau/`](tableau/).
+The main deliverables are the SQL model and validation suite in [`sql/`](sql/), production pipelines in [`src/`](src/), the formula-driven [Excel operating plan](outputs/excel/orlando_monthly_operating_plan.xlsx), and the two-page Tableau decision story in [`tableau/`](tableau/).
