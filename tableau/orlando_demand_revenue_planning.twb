@@ -16,11 +16,11 @@
   <preferences>
     <color-palette custom="true" name="Orlando Planning" type="regular">
       <color>#17324D</color>
-      <color>#1F8A89</color>
-      <color>#E07A3F</color>
-      <color>#C84A4A</color>
-      <color>#6C7A89</color>
-      <color>#A7D8D8</color>
+      <color>#4E79A7</color>
+      <color>#2A9D8F</color>
+      <color>#E28E2C</color>
+      <color>#D95F59</color>
+      <color>#9AA6B2</color>
     </color-palette>
   </preferences>
   <datasources>
@@ -1209,6 +1209,7 @@
             <column datatype="string" name="series_name" ordinal="3" />
             <column datatype="integer" name="series_order" ordinal="4" />
             <column datatype="real" name="net_revenue_dollars" ordinal="5" />
+            <column datatype="string" name="series_scope" ordinal="6" />
           </columns>
         </relation>
         <metadata-records>
@@ -1284,6 +1285,18 @@
             <contains-null>true</contains-null>
             <object-id>[REVENUE_SERIES_TABLE]</object-id>
           </metadata-record>
+          <metadata-record class="column">
+            <remote-name>series_scope</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[series_scope]</local-name>
+            <parent-name>[revenue_series.csv]</parent-name>
+            <remote-alias>series_scope</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[REVENUE_SERIES_TABLE]</object-id>
+          </metadata-record>
         </metadata-records>
       </connection>
       <aliases enabled="yes" />
@@ -1294,6 +1307,7 @@
       <column caption="Measure" datatype="string" name="[series_name]" role="dimension" type="nominal" />
       <column caption="Series Order" datatype="integer" name="[series_order]" role="measure" type="quantitative" />
       <column caption="Net Revenue ($)" datatype="real" name="[net_revenue_dollars]" role="measure" type="quantitative" default-format="$#,##0.00;($#,##0.00)" />
+      <column caption="Series Scope" datatype="string" name="[series_scope]" role="dimension" type="nominal" />
       <layout dim-ordering="alphabetic" measure-ordering="alphabetic" show-structure="true" />
       <object-graph>
         <objects>
@@ -1307,6 +1321,7 @@
                   <column datatype="string" name="series_name" ordinal="3" />
                   <column datatype="integer" name="series_order" ordinal="4" />
                   <column datatype="real" name="net_revenue_dollars" ordinal="5" />
+                  <column datatype="string" name="series_scope" ordinal="6" />
                 </columns>
               </relation>
             </properties>
@@ -1899,13 +1914,103 @@
         </objects>
       </object-graph>
     </datasource>
+    <datasource caption="Kpi Trends" inline="true" name="federated.orlando_kpi_trends" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Kpi Trends" name="textscan.orlando_kpi_trends">
+            <connection class="textscan" directory="data" filename="kpi_trends.csv" password="" server="" />
+          </named-connection>
+        </named-connections>
+        <relation connection="textscan.orlando_kpi_trends" name="kpi_trends.csv" table="[kpi_trends#csv]" type="table">
+          <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+            <column datatype="string" name="metric_name" ordinal="0" />
+            <column datatype="string" name="trend_date" ordinal="1" />
+            <column datatype="integer" name="trend_order" ordinal="2" />
+            <column datatype="real" name="trend_value" ordinal="3" />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class="column">
+            <remote-name>metric_name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[metric_name]</local-name>
+            <parent-name>[kpi_trends.csv]</parent-name>
+            <remote-alias>metric_name</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[KPI_TRENDS_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>trend_date</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[trend_date]</local-name>
+            <parent-name>[kpi_trends.csv]</parent-name>
+            <remote-alias>trend_date</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[KPI_TRENDS_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>trend_order</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[trend_order]</local-name>
+            <parent-name>[kpi_trends.csv]</parent-name>
+            <remote-alias>trend_order</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[KPI_TRENDS_TABLE]</object-id>
+          </metadata-record>
+          <metadata-record class="column">
+            <remote-name>trend_value</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[trend_value]</local-name>
+            <parent-name>[kpi_trends.csv]</parent-name>
+            <remote-alias>trend_value</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[KPI_TRENDS_TABLE]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled="yes" />
+      <column caption="kpi_trends.csv" datatype="table" name="[__tableau_internal_object_id__].[KPI_TRENDS_TABLE]" role="measure" type="quantitative" />
+      <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+      <column caption="Trend Date" datatype="string" name="[trend_date]" role="dimension" type="nominal" />
+      <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+      <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+      <layout dim-ordering="alphabetic" measure-ordering="alphabetic" show-structure="true" />
+      <object-graph>
+        <objects>
+          <object caption="Kpi Trends" id="KPI_TRENDS_TABLE">
+            <properties context="">
+              <relation connection="textscan.orlando_kpi_trends" name="kpi_trends.csv" table="[kpi_trends#csv]" type="table">
+                <columns character-set="UTF-8" header="yes" locale="en_US" separator=",">
+                  <column datatype="string" name="metric_name" ordinal="0" />
+                  <column datatype="string" name="trend_date" ordinal="1" />
+                  <column datatype="integer" name="trend_order" ordinal="2" />
+                  <column datatype="real" name="trend_value" ordinal="3" />
+                </columns>
+              </relation>
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
   </datasources>
   <worksheets>
     <worksheet name="KPI - Forecast Demand">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Expected 30-Day Demand</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">30-Day Demand</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -1932,13 +2037,16 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[sum:predicted_demand:qk]&gt; tickets</run>
+                <run fontcolor="#17324D" fontname="Tableau Medium" fontsize="18">&lt;[federated.orlando_planning].[sum:predicted_demand:qk]&gt; tickets</run>
+                <run fontcolor="#E28E2C" fontname="Tableau Light" fontsize="8">
+▼ 0.5% vs demand plan</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element="cell">
-                <format attr="text-align" value="center" />
+                <format attr="text-align" value="left" />
                 <format attr="vertical-align" value="center" />
+                <format attr="wrap" value="true" />
               </style-rule>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
@@ -1949,13 +2057,73 @@
         <rows />
         <cols />
       </table>
-      <simple-id uuid="{D97D87D2-825B-4CDB-A55E-2FF9583A850D}" />
+      <simple-id uuid="{86A91721-6498-4D67-ADEF-4BB821A06234}" />
+    </worksheet>
+    <worksheet name="Trend - Forecast Demand">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Kpi Trends" name="federated.orlando_kpi_trends" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_kpi_trends">
+            <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+            <column-instance column="[trend_order]" derivation="None" name="[none:trend_order:nk]" pivot="key" type="nominal" />
+            <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+            <column-instance column="[trend_value]" derivation="Sum" name="[sum:trend_value:qk]" pivot="key" type="quantitative" />
+            <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+            <column-instance column="[metric_name]" derivation="None" name="[none:metric_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_kpi_trends].[none:metric_name:nk]">
+            <groupfilter function="member" level="[none:metric_name:nk]" member="&quot;Forecast Demand&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="axis">
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[sum:trend_value:qk]" scope="rows" value="false" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="worksheet">
+            <format attr="display-field-labels" scope="cols" value="false" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#4E79A7" />
+                <format attr="mark-labels-show" value="false" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_kpi_trends].[sum:trend_value:qk]</rows>
+        <cols>[federated.orlando_kpi_trends].[none:trend_order:nk]</cols>
+      </table>
+      <simple-id uuid="{9D2AAC82-696D-4D16-9CE3-94CFE46330C6}" />
     </worksheet>
     <worksheet name="KPI - Forecast Revenue">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Expected 30-Day Net Revenue</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Net Revenue</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -1982,13 +2150,16 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">$&lt;[federated.orlando_planning].[sum:predicted_net_revenue:qk]&gt;</run>
+                <run fontcolor="#2A9D8F" fontname="Tableau Medium" fontsize="18">$&lt;[federated.orlando_planning].[sum:predicted_net_revenue:qk]&gt;</run>
+                <run fontcolor="#2A9D8F" fontname="Tableau Light" fontsize="8">
+▲ 6.7% vs revenue plan</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element="cell">
-                <format attr="text-align" value="center" />
+                <format attr="text-align" value="left" />
                 <format attr="vertical-align" value="center" />
+                <format attr="wrap" value="true" />
               </style-rule>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
@@ -1999,13 +2170,73 @@
         <rows />
         <cols />
       </table>
-      <simple-id uuid="{34D65C5B-29C9-4990-9E6D-28BE6EC347F1}" />
+      <simple-id uuid="{816024C1-2444-4D87-860D-2EBF31AEA535}" />
+    </worksheet>
+    <worksheet name="Trend - Forecast Revenue">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Kpi Trends" name="federated.orlando_kpi_trends" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_kpi_trends">
+            <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+            <column-instance column="[trend_order]" derivation="None" name="[none:trend_order:nk]" pivot="key" type="nominal" />
+            <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+            <column-instance column="[trend_value]" derivation="Sum" name="[sum:trend_value:qk]" pivot="key" type="quantitative" />
+            <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+            <column-instance column="[metric_name]" derivation="None" name="[none:metric_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_kpi_trends].[none:metric_name:nk]">
+            <groupfilter function="member" level="[none:metric_name:nk]" member="&quot;Forecast Revenue&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="axis">
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[sum:trend_value:qk]" scope="rows" value="false" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="worksheet">
+            <format attr="display-field-labels" scope="cols" value="false" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#2A9D8F" />
+                <format attr="mark-labels-show" value="false" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_kpi_trends].[sum:trend_value:qk]</rows>
+        <cols>[federated.orlando_kpi_trends].[none:trend_order:nk]</cols>
+      </table>
+      <simple-id uuid="{9F89843F-28F6-4ACF-A289-88B6C8465561}" />
     </worksheet>
     <worksheet name="KPI - Peak Capacity Use">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Peak Capacity Used</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Peak Capacity</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2032,13 +2263,16 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[max:peak_capacity_utilization:qk]&gt;</run>
+                <run fontcolor="#4E79A7" fontname="Tableau Medium" fontsize="18">&lt;[federated.orlando_planning].[max:peak_capacity_utilization:qk]&gt;</run>
+                <run fontcolor="#2A9D8F" fontname="Tableau Light" fontsize="8">
+▼ 13.1 pp below 85% watch level</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element="cell">
-                <format attr="text-align" value="center" />
+                <format attr="text-align" value="left" />
                 <format attr="vertical-align" value="center" />
+                <format attr="wrap" value="true" />
               </style-rule>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
@@ -2049,13 +2283,73 @@
         <rows />
         <cols />
       </table>
-      <simple-id uuid="{F581DB99-3938-4FA4-B6E1-3EE4AF40571C}" />
+      <simple-id uuid="{2EC48C43-0CF0-4C27-AFB6-27D3A6CEBDB5}" />
+    </worksheet>
+    <worksheet name="Trend - Peak Capacity Use">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Kpi Trends" name="federated.orlando_kpi_trends" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_kpi_trends">
+            <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+            <column-instance column="[trend_order]" derivation="None" name="[none:trend_order:nk]" pivot="key" type="nominal" />
+            <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+            <column-instance column="[trend_value]" derivation="Sum" name="[sum:trend_value:qk]" pivot="key" type="quantitative" />
+            <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+            <column-instance column="[metric_name]" derivation="None" name="[none:metric_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_kpi_trends].[none:metric_name:nk]">
+            <groupfilter function="member" level="[none:metric_name:nk]" member="&quot;Peak Capacity Use&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="axis">
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[sum:trend_value:qk]" scope="rows" value="false" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="worksheet">
+            <format attr="display-field-labels" scope="cols" value="false" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#4E79A7" />
+                <format attr="mark-labels-show" value="false" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_kpi_trends].[sum:trend_value:qk]</rows>
+        <cols>[federated.orlando_kpi_trends].[none:trend_order:nk]</cols>
+      </table>
+      <simple-id uuid="{CECAF64F-5908-4C49-9437-C45CA9B20337}" />
     </worksheet>
     <worksheet name="KPI - Review Dates">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Dates Needing Review</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Dates to Review</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2087,13 +2381,16 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[cnt:target_date:qk]&gt; days</run>
+                <run fontcolor="#E28E2C" fontname="Tableau Medium" fontsize="18">&lt;[federated.orlando_planning].[cnt:target_date:qk]&gt; days</run>
+                <run fontcolor="#2A9D8F" fontname="Tableau Light" fontsize="8">
+✓ 28 of 30 days need no change</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element="cell">
-                <format attr="text-align" value="center" />
+                <format attr="text-align" value="left" />
                 <format attr="vertical-align" value="center" />
+                <format attr="wrap" value="true" />
               </style-rule>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
@@ -2104,13 +2401,73 @@
         <rows />
         <cols />
       </table>
-      <simple-id uuid="{0925E69C-BED6-4393-B8F2-93FAD908BDEC}" />
+      <simple-id uuid="{50400902-B7E4-4077-A666-028A7D4A40AF}" />
+    </worksheet>
+    <worksheet name="Trend - Review Dates">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Kpi Trends" name="federated.orlando_kpi_trends" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_kpi_trends">
+            <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+            <column-instance column="[trend_order]" derivation="None" name="[none:trend_order:nk]" pivot="key" type="nominal" />
+            <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+            <column-instance column="[trend_value]" derivation="Sum" name="[sum:trend_value:qk]" pivot="key" type="quantitative" />
+            <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+            <column-instance column="[metric_name]" derivation="None" name="[none:metric_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_kpi_trends].[none:metric_name:nk]">
+            <groupfilter function="member" level="[none:metric_name:nk]" member="&quot;Review Dates&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="axis">
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[sum:trend_value:qk]" scope="rows" value="false" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="worksheet">
+            <format attr="display-field-labels" scope="cols" value="false" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#E28E2C" />
+                <format attr="mark-labels-show" value="false" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_kpi_trends].[sum:trend_value:qk]</rows>
+        <cols>[federated.orlando_kpi_trends].[none:trend_order:nk]</cols>
+      </table>
+      <simple-id uuid="{D8E18869-D676-4A1A-B0E2-73611A6DB713}" />
     </worksheet>
     <worksheet name="Daily Demand Plan">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Daily Ticket Demand versus Plan and Capacity</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Daily Ticket Demand vs Plan</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2130,14 +2487,33 @@
             <column-instance column="[series_scope]" derivation="None" name="[none:series_scope:nk]" pivot="key" type="nominal" />
           </datasource-dependencies>
           <filter class="categorical" column="[federated.orlando_demand_series].[none:series_scope:nk]">
-            <groupfilter function="member" level="[none:series_scope:nk]" member="&quot;Planning&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+            <groupfilter function="member" level="[none:series_scope:nk]" member="&quot;Primary&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
           </filter>
           <aggregation value="true" />
         </view>
         <style>
           <style-rule element="axis">
-            <format attr="title" class="0" field="[federated.orlando_demand_series].[none:forecast_date:nk]" scope="cols" value="Forecast Date" />
             <format attr="title" class="0" field="[federated.orlando_demand_series].[sum:tickets:qk]" scope="rows" value="Tickets" />
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+          </style-rule>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="mark">
+            <encoding attr="color" field="[federated.orlando_demand_series].[none:series_name:nk]" palette="temp" type="palette">
+              <map to="#17324D">
+                <bucket>"Forecast"</bucket>
+              </map>
+              <map to="#E28E2C">
+                <bucket>"Plan"</bucket>
+              </map>
+            </encoding>
           </style-rule>
         </style>
         <panes>
@@ -2151,7 +2527,7 @@
             </encodings>
             <style>
               <style-rule element="mark">
-                <format attr="mark-color" value="#1F8A89" />
+                <format attr="mark-color" value="#17324D" />
               </style-rule>
             </style>
           </pane>
@@ -2159,7 +2535,7 @@
         <rows>[federated.orlando_demand_series].[sum:tickets:qk]</rows>
         <cols>[federated.orlando_demand_series].[none:forecast_date:nk]</cols>
       </table>
-      <simple-id uuid="{D010E3D9-78BA-46FC-A090-55CF5C528A63}" />
+      <simple-id uuid="{FEC485C3-411B-4C39-BC51-35FFDFF22D00}" />
     </worksheet>
     <worksheet name="Decision Dates">
       <layout-options>
@@ -2207,13 +2583,13 @@
         <rows>[federated.orlando_planning].[none:short_date:nk]</rows>
         <cols />
       </table>
-      <simple-id uuid="{75D58EB6-53AF-457B-BB99-6C966934758C}" />
+      <simple-id uuid="{8F838360-F3AB-4D3C-8FC2-FFF6FB794C90}" />
     </worksheet>
     <worksheet name="Daily Revenue Plan">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Daily Net Revenue Forecast, Range, and Plan</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Daily Net Revenue vs Plan</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2229,13 +2605,37 @@
             <column-instance column="[net_revenue_dollars]" derivation="Sum" name="[sum:net_revenue_dollars:qk]" pivot="key" type="quantitative" />
             <column caption="Measure" datatype="string" name="[series_name]" role="dimension" type="nominal" />
             <column-instance column="[series_name]" derivation="None" name="[none:series_name:nk]" pivot="key" type="nominal" />
+            <column caption="Series Scope" datatype="string" name="[series_scope]" role="dimension" type="nominal" />
+            <column-instance column="[series_scope]" derivation="None" name="[none:series_scope:nk]" pivot="key" type="nominal" />
           </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_revenue_series].[none:series_scope:nk]">
+            <groupfilter function="member" level="[none:series_scope:nk]" member="&quot;Primary&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
           <aggregation value="true" />
         </view>
         <style>
           <style-rule element="axis">
-            <format attr="title" class="0" field="[federated.orlando_revenue_series].[none:forecast_date:nk]" scope="cols" value="Forecast Date" />
             <format attr="title" class="0" field="[federated.orlando_revenue_series].[sum:net_revenue_dollars:qk]" scope="rows" value="Net Revenue ($)" />
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+          </style-rule>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="mark">
+            <encoding attr="color" field="[federated.orlando_revenue_series].[none:series_name:nk]" palette="temp" type="palette">
+              <map to="#17324D">
+                <bucket>"Forecast"</bucket>
+              </map>
+              <map to="#E28E2C">
+                <bucket>"Plan"</bucket>
+              </map>
+            </encoding>
           </style-rule>
         </style>
         <panes>
@@ -2249,7 +2649,7 @@
             </encodings>
             <style>
               <style-rule element="mark">
-                <format attr="mark-color" value="#1F8A89" />
+                <format attr="mark-color" value="#17324D" />
               </style-rule>
             </style>
           </pane>
@@ -2257,13 +2657,13 @@
         <rows>[federated.orlando_revenue_series].[sum:net_revenue_dollars:qk]</rows>
         <cols>[federated.orlando_revenue_series].[none:forecast_date:nk]</cols>
       </table>
-      <simple-id uuid="{3289636A-9632-4C45-8348-8D59BEA2A0BB}" />
+      <simple-id uuid="{131651F9-D15A-4C17-B376-C8604BBC5563}" />
     </worksheet>
     <worksheet name="KPI - Campaign Difference">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Campaign-Day Revenue Difference</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Campaign Lift</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2305,13 +2705,16 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_campaign].[min:estimate_ratio:qk]&gt;</run>
+                <run fontcolor="#2A9D8F" fontname="Tableau Medium" fontsize="18">&lt;[federated.orlando_campaign].[min:estimate_ratio:qk]&gt;</run>
+                <run fontcolor="#2A9D8F" fontname="Tableau Light" fontsize="8">
+▲ higher than matched dates</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element="cell">
-                <format attr="text-align" value="center" />
+                <format attr="text-align" value="left" />
                 <format attr="vertical-align" value="center" />
+                <format attr="wrap" value="true" />
               </style-rule>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
@@ -2322,13 +2725,73 @@
         <rows />
         <cols />
       </table>
-      <simple-id uuid="{9CECA0E7-CDE0-42D0-B449-693F3999A877}" />
+      <simple-id uuid="{4BBEDC0D-4998-4276-BC02-735C1F74C86D}" />
+    </worksheet>
+    <worksheet name="Trend - Campaign Difference">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Kpi Trends" name="federated.orlando_kpi_trends" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_kpi_trends">
+            <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+            <column-instance column="[trend_order]" derivation="None" name="[none:trend_order:nk]" pivot="key" type="nominal" />
+            <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+            <column-instance column="[trend_value]" derivation="Sum" name="[sum:trend_value:qk]" pivot="key" type="quantitative" />
+            <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+            <column-instance column="[metric_name]" derivation="None" name="[none:metric_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_kpi_trends].[none:metric_name:nk]">
+            <groupfilter function="member" level="[none:metric_name:nk]" member="&quot;Campaign Revenue Lift&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="axis">
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[sum:trend_value:qk]" scope="rows" value="false" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="worksheet">
+            <format attr="display-field-labels" scope="cols" value="false" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#2A9D8F" />
+                <format attr="mark-labels-show" value="false" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_kpi_trends].[sum:trend_value:qk]</rows>
+        <cols>[federated.orlando_kpi_trends].[none:trend_order:nk]</cols>
+      </table>
+      <simple-id uuid="{AB972C33-E215-4378-88DE-63B218C9DA76}" />
     </worksheet>
     <worksheet name="KPI - Marketing Net Gain">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Net Gain per $1 Marketing Spend</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Return per $1</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2355,13 +2818,16 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">$&lt;[federated.orlando_campaign].[min:associated_return_after_spend:qk]&gt;</run>
+                <run fontcolor="#2A9D8F" fontname="Tableau Medium" fontsize="18">$&lt;[federated.orlando_campaign].[min:associated_return_after_spend:qk]&gt;</run>
+                <run fontcolor="#2A9D8F" fontname="Tableau Light" fontsize="8">
+▲ positive after marketing spend</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element="cell">
-                <format attr="text-align" value="center" />
+                <format attr="text-align" value="left" />
                 <format attr="vertical-align" value="center" />
+                <format attr="wrap" value="true" />
               </style-rule>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
@@ -2372,13 +2838,73 @@
         <rows />
         <cols />
       </table>
-      <simple-id uuid="{9C37F7E6-510C-40A6-8111-CE84F7DF9BD3}" />
+      <simple-id uuid="{FD8EBA72-D50D-433C-93EA-5851B5FD5682}" />
+    </worksheet>
+    <worksheet name="Trend - Marketing Net Gain">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Kpi Trends" name="federated.orlando_kpi_trends" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_kpi_trends">
+            <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+            <column-instance column="[trend_order]" derivation="None" name="[none:trend_order:nk]" pivot="key" type="nominal" />
+            <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+            <column-instance column="[trend_value]" derivation="Sum" name="[sum:trend_value:qk]" pivot="key" type="quantitative" />
+            <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+            <column-instance column="[metric_name]" derivation="None" name="[none:metric_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_kpi_trends].[none:metric_name:nk]">
+            <groupfilter function="member" level="[none:metric_name:nk]" member="&quot;Marketing Net Gain&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="axis">
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[sum:trend_value:qk]" scope="rows" value="false" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="worksheet">
+            <format attr="display-field-labels" scope="cols" value="false" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#2A9D8F" />
+                <format attr="mark-labels-show" value="false" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_kpi_trends].[sum:trend_value:qk]</rows>
+        <cols>[federated.orlando_kpi_trends].[none:trend_order:nk]</cols>
+      </table>
+      <simple-id uuid="{0A9C56DD-290A-44AC-9064-28F9FDC66D7C}" />
     </worksheet>
     <worksheet name="KPI - Demand Error">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Typical Daily Demand Error (MAE)</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Demand Error</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2405,13 +2931,16 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[min:selected_demand_mae:qk]&gt; tickets</run>
+                <run fontcolor="#4E79A7" fontname="Tableau Medium" fontsize="18">&lt;[federated.orlando_planning].[min:selected_demand_mae:qk]&gt; tickets</run>
+                <run fontcolor="#506475" fontname="Tableau Light" fontsize="8">
+↓ Lower means more accurate</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element="cell">
-                <format attr="text-align" value="center" />
+                <format attr="text-align" value="left" />
                 <format attr="vertical-align" value="center" />
+                <format attr="wrap" value="true" />
               </style-rule>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
@@ -2422,13 +2951,73 @@
         <rows />
         <cols />
       </table>
-      <simple-id uuid="{73600B1F-69EC-4A28-9A74-CFED5570DC3D}" />
+      <simple-id uuid="{A5DD4FCB-FC7D-46C5-A4A5-7070143BA6B2}" />
+    </worksheet>
+    <worksheet name="Trend - Demand Error">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Kpi Trends" name="federated.orlando_kpi_trends" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_kpi_trends">
+            <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+            <column-instance column="[trend_order]" derivation="None" name="[none:trend_order:nk]" pivot="key" type="nominal" />
+            <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+            <column-instance column="[trend_value]" derivation="Sum" name="[sum:trend_value:qk]" pivot="key" type="quantitative" />
+            <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+            <column-instance column="[metric_name]" derivation="None" name="[none:metric_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_kpi_trends].[none:metric_name:nk]">
+            <groupfilter function="member" level="[none:metric_name:nk]" member="&quot;Demand Error&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="axis">
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[sum:trend_value:qk]" scope="rows" value="false" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="worksheet">
+            <format attr="display-field-labels" scope="cols" value="false" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#4E79A7" />
+                <format attr="mark-labels-show" value="false" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_kpi_trends].[sum:trend_value:qk]</rows>
+        <cols>[federated.orlando_kpi_trends].[none:trend_order:nk]</cols>
+      </table>
+      <simple-id uuid="{955FCF04-AF47-4FF3-96CE-5CCC1115241B}" />
     </worksheet>
     <worksheet name="KPI - Revenue Error">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Revenue Forecast Error (WAPE)</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Revenue Error</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2455,13 +3044,16 @@
             </encodings>
             <customized-label>
               <formatted-text>
-                <run fontcolor="#17324D" fontname="Tableau Light" fontsize="24">&lt;[federated.orlando_planning].[min:selected_revenue_wape_pct:qk]&gt;%</run>
+                <run fontcolor="#E28E2C" fontname="Tableau Medium" fontsize="18">&lt;[federated.orlando_planning].[min:selected_revenue_wape_pct:qk]&gt;%</run>
+                <run fontcolor="#506475" fontname="Tableau Light" fontsize="8">
+↓ Lower means more accurate</run>
               </formatted-text>
             </customized-label>
             <style>
               <style-rule element="cell">
-                <format attr="text-align" value="center" />
+                <format attr="text-align" value="left" />
                 <format attr="vertical-align" value="center" />
+                <format attr="wrap" value="true" />
               </style-rule>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
@@ -2472,13 +3064,73 @@
         <rows />
         <cols />
       </table>
-      <simple-id uuid="{A28B62CB-4FCE-46CB-82E0-567D826E57DC}" />
+      <simple-id uuid="{5A80D482-65BE-4AA8-89BB-4C4E19F24A90}" />
+    </worksheet>
+    <worksheet name="Trend - Revenue Error">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Kpi Trends" name="federated.orlando_kpi_trends" />
+          </datasources>
+          <datasource-dependencies datasource="federated.orlando_kpi_trends">
+            <column caption="Trend Order" datatype="integer" name="[trend_order]" role="measure" type="quantitative" />
+            <column-instance column="[trend_order]" derivation="None" name="[none:trend_order:nk]" pivot="key" type="nominal" />
+            <column caption="Trend Value" datatype="real" name="[trend_value]" role="measure" type="quantitative" />
+            <column-instance column="[trend_value]" derivation="Sum" name="[sum:trend_value:qk]" pivot="key" type="quantitative" />
+            <column caption="Metric Name" datatype="string" name="[metric_name]" role="dimension" type="nominal" />
+            <column-instance column="[metric_name]" derivation="None" name="[none:metric_name:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[federated.orlando_kpi_trends].[none:metric_name:nk]">
+            <groupfilter function="member" level="[none:metric_name:nk]" member="&quot;Revenue Error&quot;" user:ui-domain="relevant" user:ui-enumeration="inclusive" />
+          </filter>
+          <aggregation value="true" />
+        </view>
+        <style>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="axis">
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[sum:trend_value:qk]" scope="rows" value="false" />
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="header">
+            <format attr="display" class="0" field="[federated.orlando_kpi_trends].[none:trend_order:nk]" scope="cols" value="false" />
+          </style-rule>
+          <style-rule element="worksheet">
+            <format attr="display-field-labels" scope="cols" value="false" />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option="selection-relaxation-allow">
+            <view>
+              <breakdown value="auto" />
+            </view>
+            <mark class="Line" />
+            <style>
+              <style-rule element="mark">
+                <format attr="mark-color" value="#E28E2C" />
+                <format attr="mark-labels-show" value="false" />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.orlando_kpi_trends].[sum:trend_value:qk]</rows>
+        <cols>[federated.orlando_kpi_trends].[none:trend_order:nk]</cols>
+      </table>
+      <simple-id uuid="{4C00DD7B-2783-4760-9E95-A6E921233DD7}" />
     </worksheet>
     <worksheet name="Product Revenue Mix">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Which Ticket Types Generate the 30-Day Revenue Forecast?</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">30-Day Net Revenue by Ticket Type</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2498,9 +3150,19 @@
         <style>
           <style-rule element="axis">
             <format attr="title" class="0" field="[federated.orlando_product].[sum:predicted_product_net_revenue:qk]" scope="cols" value="30-Day Net Revenue ($)" />
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
           </style-rule>
           <style-rule element="header">
             <format attr="width" field="[federated.orlando_product].[none:product_name:nk]" value="170" />
+          </style-rule>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
           </style-rule>
         </style>
         <panes>
@@ -2515,7 +3177,7 @@
             <style>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
-                <format attr="mark-color" value="#1F8A89" />
+                <format attr="mark-color" value="#17324D" />
               </style-rule>
             </style>
           </pane>
@@ -2523,13 +3185,13 @@
         <rows>[federated.orlando_product].[none:product_name:nk]</rows>
         <cols>[federated.orlando_product].[sum:predicted_product_net_revenue:qk]</cols>
       </table>
-      <simple-id uuid="{83127F51-985C-45AC-8C62-CF472C608424}" />
+      <simple-id uuid="{9CF7B09C-937B-4B8B-BB49-5AA7E42417CF}" />
     </worksheet>
     <worksheet name="Campaign Comparison">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Campaign Days Earned More than Comparable Days</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Campaign-Day Revenue vs Comparable Dates</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2543,6 +3205,7 @@
             <column-instance column="[estimator_label]" derivation="None" name="[none:estimator_label:nk]" pivot="key" type="nominal" />
             <column caption="Revenue Difference (%)" datatype="real" name="[estimate_ratio]" role="measure" type="quantitative" default-format="p0.0%" />
             <column-instance column="[estimate_ratio]" derivation="Min" name="[min:estimate_ratio:qk]" pivot="key" type="quantitative" />
+            <column-instance column="[estimator_label]" derivation="None" name="[none:estimator_label:nk]" pivot="key" type="nominal" />
             <column caption="Outcome Name" datatype="string" name="[outcome_name]" role="dimension" type="nominal" />
             <column-instance column="[outcome_name]" derivation="None" name="[none:outcome_name:nk]" pivot="key" type="nominal" />
             <column caption="Period Name" datatype="string" name="[period_name]" role="dimension" type="nominal" />
@@ -2558,10 +3221,30 @@
         </view>
         <style>
           <style-rule element="axis">
-            <format attr="title" class="0" field="[federated.orlando_campaign].[min:estimate_ratio:qk]" scope="cols" value="Revenue Difference" />
+            <format attr="title" class="0" field="[federated.orlando_campaign].[min:estimate_ratio:qk]" scope="cols" value="Revenue Difference (%)" />
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
           </style-rule>
           <style-rule element="header">
             <format attr="width" field="[federated.orlando_campaign].[none:estimator_label:nk]" value="210" />
+          </style-rule>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="mark">
+            <encoding attr="color" field="[federated.orlando_campaign].[none:estimator_label:nk]" palette="temp" type="palette">
+              <map to="#2A9D8F">
+                <bucket>"Similar non-campaign dates"</bucket>
+              </map>
+              <map to="#4E79A7">
+                <bucket>"Adjusted for observed factors"</bucket>
+              </map>
+            </encoding>
           </style-rule>
         </style>
         <panes>
@@ -2572,11 +3255,12 @@
             <mark class="Bar" />
             <encodings>
               <text column="[federated.orlando_campaign].[min:estimate_ratio:qk]" />
+              <color column="[federated.orlando_campaign].[none:estimator_label:nk]" />
             </encodings>
             <style>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
-                <format attr="mark-color" value="#1F8A89" />
+                <format attr="mark-color" value="#17324D" />
               </style-rule>
             </style>
           </pane>
@@ -2584,13 +3268,13 @@
         <rows>[federated.orlando_campaign].[none:estimator_label:nk]</rows>
         <cols>[federated.orlando_campaign].[min:estimate_ratio:qk]</cols>
       </table>
-      <simple-id uuid="{5FC9B3BA-8537-4AA6-9736-97DAEDAC472A}" />
+      <simple-id uuid="{9B9D8E44-F95E-4FF8-8AFC-CA6F00DD90BC}" />
     </worksheet>
     <worksheet name="Demand Error by Range">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Typical Daily Ticket Error by Forecast Range (MAE)</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Demand Error by Forecast Range (MAE)</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2614,10 +3298,20 @@
         </view>
         <style>
           <style-rule element="axis">
-            <format attr="title" class="0" field="[federated.orlando_accuracy].[min:demand_mae_tickets:qk]" scope="cols" value="Typical Daily Error (Tickets)" />
+            <format attr="title" class="0" field="[federated.orlando_accuracy].[min:demand_mae_tickets:qk]" scope="cols" value="Daily Error (Tickets)" />
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
           </style-rule>
           <style-rule element="header">
             <format attr="width" field="[federated.orlando_accuracy].[none:forecast_range:nk]" value="150" />
+          </style-rule>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
           </style-rule>
         </style>
         <panes>
@@ -2632,7 +3326,7 @@
             <style>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
-                <format attr="mark-color" value="#1F8A89" />
+                <format attr="mark-color" value="#4E79A7" />
               </style-rule>
             </style>
           </pane>
@@ -2640,13 +3334,13 @@
         <rows>[federated.orlando_accuracy].[none:forecast_range:nk]</rows>
         <cols>[federated.orlando_accuracy].[min:demand_mae_tickets:qk]</cols>
       </table>
-      <simple-id uuid="{8907FDF5-DD09-429E-85E0-A37108EA0052}" />
+      <simple-id uuid="{8D71F615-CA2D-4FC8-A0F8-0FBE429B889C}" />
     </worksheet>
     <worksheet name="Revenue Error by Range">
       <layout-options>
         <title>
           <formatted-text>
-            <run fontcolor="#17324D" fontname="Tableau Medium">Revenue Forecast Error by Forecast Range (WAPE)</run>
+            <run fontcolor="#17324D" fontname="Tableau Medium">Revenue Error by Forecast Range (WAPE)</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2670,10 +3364,20 @@
         </view>
         <style>
           <style-rule element="axis">
-            <format attr="title" class="0" field="[federated.orlando_accuracy].[min:revenue_wape_ratio:qk]" scope="cols" value="Revenue Error (WAPE)" />
+            <format attr="title" class="0" field="[federated.orlando_accuracy].[min:revenue_wape_ratio:qk]" scope="cols" value="Revenue Error (%)" />
+            <format attr="line-visibility" scope="rows" value="off" />
+            <format attr="line-visibility" scope="cols" value="off" />
           </style-rule>
           <style-rule element="header">
             <format attr="width" field="[federated.orlando_accuracy].[none:forecast_range:nk]" value="150" />
+          </style-rule>
+          <style-rule element="gridline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
+          </style-rule>
+          <style-rule element="zeroline">
+            <format attr="stroke-size" value="0" />
+            <format attr="line-visibility" value="off" />
           </style-rule>
         </style>
         <panes>
@@ -2688,7 +3392,7 @@
             <style>
               <style-rule element="mark">
                 <format attr="mark-labels-show" value="true" />
-                <format attr="mark-color" value="#1F8A89" />
+                <format attr="mark-color" value="#E28E2C" />
               </style-rule>
             </style>
           </pane>
@@ -2696,7 +3400,7 @@
         <rows>[federated.orlando_accuracy].[none:forecast_range:nk]</rows>
         <cols>[federated.orlando_accuracy].[min:revenue_wape_ratio:qk]</cols>
       </table>
-      <simple-id uuid="{5208BBB9-020B-4BC4-A111-F82D7E84A726}" />
+      <simple-id uuid="{0F856585-23BC-49B6-84BA-FAD7D7954F7A}" />
     </worksheet>
   </worksheets>
   <dashboards>
@@ -2704,8 +3408,9 @@
       <layout-options>
         <title>
           <formatted-text>
-            <run bold="true" fontcolor="#17324D" fontname="Tableau Medium" fontsize="22">30-Day Plan: Capacity Is Sufficient; 2 Dates Need Review</run>
-            <run fontcolor="#506475" fontname="Tableau Light" fontsize="11">  |  Use this page to plan daily staffing, protect price on strong days, and monitor revenue shortfalls.</run>
+            <run bold="true" fontcolor="#17324D" fontname="Tableau Medium" fontsize="22">30-Day Operating Plan: Capacity Is Sufficient; 2 Dates Need Review</run>
+            <run fontcolor="#506475" fontname="Tableau Light" fontsize="11">
+See expected tickets and net revenue, then focus staffing, pricing, and promotion on the highlighted dates.</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2714,91 +3419,115 @@
         <zone h="100000" id="1" type-v2="layout-basic" w="100000" x="0" y="0">
           <zone h="10000" id="2" type-v2="title" w="100000" x="0" y="0">
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-style" value="solid" />
+              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#EAF2F8" />
             </zone-style>
           </zone>
-          <zone h="15000" id="3" name="KPI - Forecast Demand" w="25000" x="0" y="10000">
+          <zone h="15000" id="3" name="KPI - Forecast Demand" w="16500" x="0" y="10000">
             <layout-cache type-h="scalable" type-w="scalable" />
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="4" name="Trend - Forecast Demand" w="8500" x="16500" y="10000" show-title="false">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="5" name="KPI - Forecast Revenue" w="16500" x="25000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="6" name="Trend - Forecast Revenue" w="8500" x="41500" y="10000" show-title="false">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="7" name="KPI - Peak Capacity Use" w="16500" x="50000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="8" name="Trend - Peak Capacity Use" w="8500" x="66500" y="10000" show-title="false">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="9" name="KPI - Review Dates" w="16500" x="75000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="10" name="Trend - Review Dates" w="8500" x="91500" y="10000" show-title="false">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="38000" id="11" name="Daily Demand Plan" w="70000" x="0" y="25000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
               <format attr="border-style" value="solid" />
+              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#FFFFFF" />
             </zone-style>
           </zone>
-          <zone h="15000" id="4" name="KPI - Forecast Revenue" w="25000" x="25000" y="10000">
+          <zone h="38000" id="12" name="Decision Dates" w="30000" x="70000" y="25000">
             <layout-cache type-h="scalable" type-w="scalable" />
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-style" value="solid" />
+              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#FFFFFF" />
             </zone-style>
           </zone>
-          <zone h="15000" id="5" name="KPI - Peak Capacity Use" w="25000" x="50000" y="10000">
+          <zone h="37000" id="13" name="Daily Revenue Plan" w="100000" x="0" y="63000">
             <layout-cache type-h="scalable" type-w="scalable" />
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-style" value="solid" />
+              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#FFFFFF" />
             </zone-style>
           </zone>
-          <zone h="15000" id="6" name="KPI - Review Dates" w="25000" x="75000" y="10000">
-            <layout-cache type-h="scalable" type-w="scalable" />
-            <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
-              <format attr="border-style" value="solid" />
-              <format attr="border-width" value="1" />
-              <format attr="margin" value="6" />
-              <format attr="background-color" value="#FFFFFF" />
-            </zone-style>
-          </zone>
-          <zone h="38000" id="7" name="Daily Demand Plan" w="65000" x="0" y="25000">
-            <layout-cache type-h="scalable" type-w="scalable" />
-            <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
-              <format attr="border-style" value="solid" />
-              <format attr="border-width" value="1" />
-              <format attr="margin" value="6" />
-              <format attr="background-color" value="#FFFFFF" />
-            </zone-style>
-          </zone>
-          <zone h="38000" id="8" name="Decision Dates" w="35000" x="65000" y="25000">
-            <layout-cache type-h="scalable" type-w="scalable" />
-            <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
-              <format attr="border-style" value="solid" />
-              <format attr="border-width" value="1" />
-              <format attr="margin" value="6" />
-              <format attr="background-color" value="#FFFFFF" />
-            </zone-style>
-          </zone>
-          <zone h="37000" id="9" name="Daily Revenue Plan" w="100000" x="0" y="63000">
-            <layout-cache type-h="scalable" type-w="scalable" />
-            <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
-              <format attr="border-style" value="solid" />
-              <format attr="border-width" value="1" />
-              <format attr="margin" value="6" />
-              <format attr="background-color" value="#FFFFFF" />
-            </zone-style>
-          </zone>
-          <zone h="5000" id="10" name="Daily Demand Plan" pane-specification-id="0" param="[federated.orlando_demand_series].[none:series_name:nk]" type-v2="color" w="41000" x="23000" y="31500">
+          <zone h="5000" id="14" name="Daily Demand Plan" pane-specification-id="0" param="[federated.orlando_demand_series].[none:series_name:nk]" type-v2="color" w="40000" x="26000" y="31500">
             <zone-style>
               <format attr="border-style" value="none" />
               <format attr="background-color" value="#FFFFFF" />
               <format attr="margin" value="3" />
             </zone-style>
           </zone>
-          <zone h="5000" id="11" name="Daily Revenue Plan" pane-specification-id="0" param="[federated.orlando_revenue_series].[none:series_name:nk]" type-v2="color" w="65000" x="34000" y="69500">
+          <zone h="5000" id="15" name="Daily Revenue Plan" pane-specification-id="0" param="[federated.orlando_revenue_series].[none:series_name:nk]" type-v2="color" w="65000" x="34000" y="69500">
             <zone-style>
               <format attr="border-style" value="none" />
               <format attr="background-color" value="#FFFFFF" />
@@ -2806,22 +3535,23 @@
             </zone-style>
           </zone>
           <zone-style>
-            <format attr="border-color" value="#D9E2E8" />
             <format attr="border-style" value="solid" />
+            <format attr="border-color" value="#D9E2E8" />
             <format attr="border-width" value="1" />
             <format attr="margin" value="6" />
-            <format attr="background-color" value="#F4F6F7" />
+            <format attr="background-color" value="#F5F7F9" />
           </zone-style>
         </zone>
       </zones>
-      <simple-id uuid="{0BB0D1B6-B9BB-407F-85C1-E1C8BFB4DE39}" />
+      <simple-id uuid="{18112860-4EC0-4E7C-B845-5307B3A943A5}" />
     </dashboard>
     <dashboard enable-sort-zone-taborder="true" name="Revenue Drivers &amp; Confidence">
       <layout-options>
         <title>
           <formatted-text>
-            <run bold="true" fontcolor="#17324D" fontname="Tableau Medium" fontsize="22">Revenue Drivers &amp; Forecast Confidence</run>
-            <run fontcolor="#506475" fontname="Tableau Light" fontsize="11">  |  Use this page to see which products generate revenue, how campaign periods differ, and how error changes with lead time; campaign results are observational.</run>
+            <run bold="true" fontcolor="#17324D" fontname="Tableau Medium" fontsize="22">What Drives Revenue—and How Much Confidence to Place in the Forecast</run>
+            <run fontcolor="#506475" fontname="Tableau Light" fontsize="11">
+See ticket mix, campaign-period differences, and how error changes with lead time. Campaign comparisons are associations, not causal proof.</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -2830,103 +3560,127 @@
         <zone h="100000" id="1" type-v2="layout-basic" w="100000" x="0" y="0">
           <zone h="10000" id="2" type-v2="title" w="100000" x="0" y="0">
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-style" value="solid" />
+              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#EAF2F8" />
             </zone-style>
           </zone>
-          <zone h="15000" id="3" name="KPI - Campaign Difference" w="25000" x="0" y="10000">
+          <zone h="15000" id="3" name="KPI - Campaign Difference" w="18500" x="0" y="10000">
             <layout-cache type-h="scalable" type-w="scalable" />
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="4" name="Trend - Campaign Difference" w="6500" x="18500" y="10000" show-title="false">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="5" name="KPI - Marketing Net Gain" w="16500" x="25000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="6" name="Trend - Marketing Net Gain" w="8500" x="41500" y="10000" show-title="false">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="7" name="KPI - Demand Error" w="16500" x="50000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="8" name="Trend - Demand Error" w="8500" x="66500" y="10000" show-title="false">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="9" name="KPI - Revenue Error" w="16500" x="75000" y="10000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="15000" id="10" name="Trend - Revenue Error" w="8500" x="91500" y="10000" show-title="false">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
+              <format attr="border-style" value="none" />
+              <format attr="margin" value="0" />
+              <format attr="background-color" value="#FFFFFF" />
+            </zone-style>
+          </zone>
+          <zone h="40000" id="11" name="Product Revenue Mix" w="50000" x="0" y="25000">
+            <layout-cache type-h="scalable" type-w="scalable" />
+            <zone-style>
               <format attr="border-style" value="solid" />
+              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#FFFFFF" />
             </zone-style>
           </zone>
-          <zone h="15000" id="4" name="KPI - Marketing Net Gain" w="25000" x="25000" y="10000">
+          <zone h="40000" id="12" name="Campaign Comparison" w="50000" x="50000" y="25000">
             <layout-cache type-h="scalable" type-w="scalable" />
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-style" value="solid" />
+              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#FFFFFF" />
             </zone-style>
           </zone>
-          <zone h="15000" id="5" name="KPI - Demand Error" w="25000" x="50000" y="10000">
+          <zone h="35000" id="13" name="Demand Error by Range" w="50000" x="0" y="65000">
             <layout-cache type-h="scalable" type-w="scalable" />
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-style" value="solid" />
+              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#FFFFFF" />
             </zone-style>
           </zone>
-          <zone h="15000" id="6" name="KPI - Revenue Error" w="25000" x="75000" y="10000">
+          <zone h="35000" id="14" name="Revenue Error by Range" w="50000" x="50000" y="65000">
             <layout-cache type-h="scalable" type-w="scalable" />
             <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
               <format attr="border-style" value="solid" />
-              <format attr="border-width" value="1" />
-              <format attr="margin" value="6" />
-              <format attr="background-color" value="#FFFFFF" />
-            </zone-style>
-          </zone>
-          <zone h="40000" id="7" name="Product Revenue Mix" w="50000" x="0" y="25000">
-            <layout-cache type-h="scalable" type-w="scalable" />
-            <zone-style>
               <format attr="border-color" value="#D9E2E8" />
-              <format attr="border-style" value="solid" />
-              <format attr="border-width" value="1" />
-              <format attr="margin" value="6" />
-              <format attr="background-color" value="#FFFFFF" />
-            </zone-style>
-          </zone>
-          <zone h="40000" id="8" name="Campaign Comparison" w="50000" x="50000" y="25000">
-            <layout-cache type-h="scalable" type-w="scalable" />
-            <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
-              <format attr="border-style" value="solid" />
-              <format attr="border-width" value="1" />
-              <format attr="margin" value="6" />
-              <format attr="background-color" value="#FFFFFF" />
-            </zone-style>
-          </zone>
-          <zone h="35000" id="9" name="Demand Error by Range" w="50000" x="0" y="65000">
-            <layout-cache type-h="scalable" type-w="scalable" />
-            <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
-              <format attr="border-style" value="solid" />
-              <format attr="border-width" value="1" />
-              <format attr="margin" value="6" />
-              <format attr="background-color" value="#FFFFFF" />
-            </zone-style>
-          </zone>
-          <zone h="35000" id="10" name="Revenue Error by Range" w="50000" x="50000" y="65000">
-            <layout-cache type-h="scalable" type-w="scalable" />
-            <zone-style>
-              <format attr="border-color" value="#D9E2E8" />
-              <format attr="border-style" value="solid" />
               <format attr="border-width" value="1" />
               <format attr="margin" value="6" />
               <format attr="background-color" value="#FFFFFF" />
             </zone-style>
           </zone>
           <zone-style>
-            <format attr="border-color" value="#D9E2E8" />
             <format attr="border-style" value="solid" />
+            <format attr="border-color" value="#D9E2E8" />
             <format attr="border-width" value="1" />
             <format attr="margin" value="6" />
-            <format attr="background-color" value="#F4F6F7" />
+            <format attr="background-color" value="#F5F7F9" />
           </zone-style>
         </zone>
       </zones>
-      <simple-id uuid="{397FB772-BEE3-481F-AFBC-F684D2521443}" />
+      <simple-id uuid="{0A805580-A3D7-42C8-9FFE-3A67DB82A7B1}" />
     </dashboard>
   </dashboards>
   <windows show-side-pane="false" source-height="135">
@@ -2951,7 +3705,30 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{910DEAA0-A86E-431A-831F-020D107A7C2A}" />
+      <simple-id uuid="{86686265-16F5-448D-BBDE-EB165D9F4C97}" />
+    </window>
+    <window class="worksheet" name="Trend - Forecast Demand">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{06A02348-E3A0-4D59-A1ED-ECF6ECD807D1}" />
     </window>
     <window class="worksheet" name="KPI - Forecast Revenue">
       <cards>
@@ -2974,7 +3751,30 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{0D1A3FC9-C5FE-49E4-BA0A-E8047FCD1F33}" />
+      <simple-id uuid="{02E47F8F-64C4-4F65-A5F4-D1E2608FD16E}" />
+    </window>
+    <window class="worksheet" name="Trend - Forecast Revenue">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{E218A0B8-01DC-43D2-9A56-2CAF2F33EEA8}" />
     </window>
     <window class="worksheet" name="KPI - Peak Capacity Use">
       <cards>
@@ -2997,7 +3797,30 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{67C7BA9F-1D30-4858-9EC2-0188157CB87E}" />
+      <simple-id uuid="{AF517AB0-C47F-4E52-9834-3B6FB24B9560}" />
+    </window>
+    <window class="worksheet" name="Trend - Peak Capacity Use">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{82F700B4-C0B5-4E3E-8A6F-ADDA0301D650}" />
     </window>
     <window class="worksheet" name="KPI - Review Dates">
       <cards>
@@ -3020,7 +3843,30 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{4226481E-E3AA-4C45-AADD-BE63295852F8}" />
+      <simple-id uuid="{FC4DFE7E-56EE-4BAB-848C-EA6EA7EC7C6D}" />
+    </window>
+    <window class="worksheet" name="Trend - Review Dates">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{2DA9C1CD-B078-46CB-ADB7-FA9289D1CE96}" />
     </window>
     <window class="worksheet" name="Daily Demand Plan">
       <cards>
@@ -3043,7 +3889,7 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{4D2E75DE-A67E-4631-B78A-D7D0DAF60837}" />
+      <simple-id uuid="{87F5EC26-87E1-4103-8655-8E081A500541}" />
     </window>
     <window class="worksheet" name="Decision Dates">
       <cards>
@@ -3066,7 +3912,7 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{92712DFC-85DA-4774-AD2A-731D3A363BA7}" />
+      <simple-id uuid="{849A3F05-153B-4191-8998-AF145F0BE4C8}" />
     </window>
     <window class="worksheet" name="Daily Revenue Plan">
       <cards>
@@ -3089,7 +3935,7 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{2FBD5690-D722-4F2D-83D4-3613B37939D0}" />
+      <simple-id uuid="{8AF95E06-8F05-410F-835D-984C898293FD}" />
     </window>
     <window class="worksheet" name="KPI - Campaign Difference">
       <cards>
@@ -3112,7 +3958,30 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{C2758A47-F27F-43A6-BEFA-7AFA0EC1EC0A}" />
+      <simple-id uuid="{13542666-E669-408D-9557-E7302030867C}" />
+    </window>
+    <window class="worksheet" name="Trend - Campaign Difference">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{279E2281-6DE5-4BD9-AE28-079A24BAB839}" />
     </window>
     <window class="worksheet" name="KPI - Marketing Net Gain">
       <cards>
@@ -3135,7 +4004,30 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{328935EE-421A-4019-9B28-7D58678E8516}" />
+      <simple-id uuid="{68637A19-6F5F-47B5-9C12-A8A466ED854F}" />
+    </window>
+    <window class="worksheet" name="Trend - Marketing Net Gain">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{4E8DD37E-0E46-484E-B2B1-CA640B39D731}" />
     </window>
     <window class="worksheet" name="KPI - Demand Error">
       <cards>
@@ -3158,7 +4050,30 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{8D37988C-8CA7-4DE2-BFC6-1D9D5FBE3CB5}" />
+      <simple-id uuid="{FE4EA6F6-E2E1-46FC-B544-A7A3049D1A96}" />
+    </window>
+    <window class="worksheet" name="Trend - Demand Error">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{3EF104C8-7B53-43A7-A414-8FB038F74578}" />
     </window>
     <window class="worksheet" name="KPI - Revenue Error">
       <cards>
@@ -3181,7 +4096,30 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{6BCC4044-B449-40E0-9426-AACE4E2FB992}" />
+      <simple-id uuid="{27E5670C-0AB1-44F1-8752-E75E8BB5A779}" />
+    </window>
+    <window class="worksheet" name="Trend - Revenue Error">
+      <cards>
+        <edge name="left">
+          <strip size="220">
+            <card type="pages" />
+            <card type="filters" />
+            <card type="marks" />
+          </strip>
+        </edge>
+        <edge name="top">
+          <strip size="2147483647">
+            <card type="columns" />
+          </strip>
+          <strip size="2147483647">
+            <card type="rows" />
+          </strip>
+          <strip size="2147483647">
+            <card type="title" />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid="{D86085F5-78BB-4B93-9BD0-F2B14579B72B}" />
     </window>
     <window class="worksheet" name="Product Revenue Mix">
       <cards>
@@ -3204,7 +4142,7 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{6E7D3DA9-9DAD-4682-8950-5C8DBEF1F315}" />
+      <simple-id uuid="{8B1E2BA7-4D7E-499B-BEC9-3B7FF780D14E}" />
     </window>
     <window class="worksheet" name="Campaign Comparison">
       <cards>
@@ -3227,7 +4165,7 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{3915DCD5-F917-49A0-AE2E-D8E6CC8044D9}" />
+      <simple-id uuid="{EDCB27BD-3B28-489C-9959-AC746DA32DCC}" />
     </window>
     <window class="worksheet" name="Demand Error by Range">
       <cards>
@@ -3250,7 +4188,7 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{40E36300-1C51-493E-B96C-B5B3C1D6812E}" />
+      <simple-id uuid="{6A040085-A409-4F6C-8AF1-F542315EDE64}" />
     </window>
     <window class="worksheet" name="Revenue Error by Range">
       <cards>
@@ -3273,20 +4211,32 @@
           </strip>
         </edge>
       </cards>
-      <simple-id uuid="{DE3AA1B4-B6CF-43D3-BE5C-E2DA2175137A}" />
+      <simple-id uuid="{C6BE6B45-4538-4800-A846-EC9DDAD2C42D}" />
     </window>
     <window class="dashboard" name="30-Day Outlook &amp; Actions" maximized="true">
       <viewpoints>
         <viewpoint name="KPI - Forecast Demand">
           <zoom type="entire-view" />
         </viewpoint>
+        <viewpoint name="Trend - Forecast Demand">
+          <zoom type="entire-view" />
+        </viewpoint>
         <viewpoint name="KPI - Forecast Revenue">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Trend - Forecast Revenue">
           <zoom type="entire-view" />
         </viewpoint>
         <viewpoint name="KPI - Peak Capacity Use">
           <zoom type="entire-view" />
         </viewpoint>
+        <viewpoint name="Trend - Peak Capacity Use">
+          <zoom type="entire-view" />
+        </viewpoint>
         <viewpoint name="KPI - Review Dates">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Trend - Review Dates">
           <zoom type="entire-view" />
         </viewpoint>
         <viewpoint name="Daily Demand Plan">
@@ -3300,20 +4250,32 @@
         </viewpoint>
       </viewpoints>
       <active id="-1" />
-      <simple-id uuid="{2E01418B-B815-4EE3-B983-6FC5BAC6A72E}" />
+      <simple-id uuid="{5338C2A8-EA50-46F9-BEDC-D32BE83B41E7}" />
     </window>
     <window class="dashboard" name="Revenue Drivers &amp; Confidence">
       <viewpoints>
         <viewpoint name="KPI - Campaign Difference">
           <zoom type="entire-view" />
         </viewpoint>
+        <viewpoint name="Trend - Campaign Difference">
+          <zoom type="entire-view" />
+        </viewpoint>
         <viewpoint name="KPI - Marketing Net Gain">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Trend - Marketing Net Gain">
           <zoom type="entire-view" />
         </viewpoint>
         <viewpoint name="KPI - Demand Error">
           <zoom type="entire-view" />
         </viewpoint>
+        <viewpoint name="Trend - Demand Error">
+          <zoom type="entire-view" />
+        </viewpoint>
         <viewpoint name="KPI - Revenue Error">
+          <zoom type="entire-view" />
+        </viewpoint>
+        <viewpoint name="Trend - Revenue Error">
           <zoom type="entire-view" />
         </viewpoint>
         <viewpoint name="Product Revenue Mix">
@@ -3330,7 +4292,7 @@
         </viewpoint>
       </viewpoints>
       <active id="-1" />
-      <simple-id uuid="{63E6C365-0F37-4C68-99D6-64E189220999}" />
+      <simple-id uuid="{5932D24E-E42C-49CD-9E94-18D350FA1819}" />
     </window>
   </windows>
 </workbook>

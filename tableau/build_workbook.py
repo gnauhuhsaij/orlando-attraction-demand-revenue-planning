@@ -23,11 +23,14 @@ DEFAULT_DATABASE_URL = "postgresql+psycopg:///orlando_demand_revenue"
 TABLEAU_VERSION = "18.1"
 TABLEAU_BUILD = "2026.2.3 (20262.26.0912.1023)"
 NAVY = "#17324D"
-TEAL = "#1F8A89"
-ORANGE = "#E07A3F"
-RED = "#C84A4A"
+BLUE = "#4E79A7"
+TEAL = "#2A9D8F"
+ORANGE = "#E28E2C"
+RED = "#D95F59"
+GRAY = "#9AA6B2"
+MUTED_TEXT = "#506475"
 LIGHT_BLUE = "#EAF2F8"
-LIGHT_GRAY = "#F4F6F7"
+LIGHT_GRAY = "#F5F7F9"
 
 
 @dataclass(frozen=True)
@@ -185,9 +188,10 @@ def load_dashboard_data(engine: Engine) -> dict[str, pd.DataFrame]:
             series.series_order,
             series.tickets,
             CASE
-                WHEN series.series_name IN ('Forecast', 'Demand plan', 'Capacity')
-                    THEN 'Planning'
-                ELSE 'Uncertainty'
+                WHEN series.series_name IN ('Forecast', 'Plan')
+                    THEN 'Primary'
+                WHEN series.series_name = 'Capacity' THEN 'Capacity reference'
+                ELSE 'Uncertainty range'
             END AS series_scope
         FROM analytics.vw_daily_business_action_plan AS action
         CROSS JOIN LATERAL (
@@ -195,7 +199,7 @@ def load_dashboard_data(engine: Engine) -> dict[str, pd.DataFrame]:
                 ('Forecast', 1, action.predicted_demand),
                 ('Low estimate', 2, action.demand_lower_bound),
                 ('High estimate', 3, action.demand_upper_bound),
-                ('Demand plan', 4, action.demand_target::numeric),
+                ('Plan', 4, action.demand_target::numeric),
                 ('Capacity', 5, action.available_capacity::numeric)
         ) AS series (series_name, series_order, tickets)
         ORDER BY action.target_date, series.series_order
@@ -212,14 +216,19 @@ def load_dashboard_data(engine: Engine) -> dict[str, pd.DataFrame]:
             action.forecast_horizon_days,
             series.series_name,
             series.series_order,
-            series.net_revenue_dollars
+            series.net_revenue_dollars,
+            CASE
+                WHEN series.series_name IN ('Forecast', 'Plan')
+                    THEN 'Primary'
+                ELSE 'Uncertainty range'
+            END AS series_scope
         FROM analytics.vw_daily_business_action_plan AS action
         CROSS JOIN LATERAL (
             VALUES
                 ('Forecast', 1, action.predicted_net_revenue),
                 ('Low estimate', 2, action.revenue_lower_bound),
                 ('High estimate', 3, action.revenue_upper_bound),
-                ('Revenue plan', 4, action.revenue_target::numeric)
+                ('Plan', 4, action.revenue_target::numeric)
         ) AS series (series_name, series_order, net_revenue_dollars)
         ORDER BY action.target_date, series.series_order
         """,
@@ -326,6 +335,156 @@ def load_dashboard_data(engine: Engine) -> dict[str, pd.DataFrame]:
         ("target_date",),
     )
 
+    kpi_trends = read_dashboard_query(
+        engine,
+        """
+        WITH latest_demand_batch AS (
+            SELECT max(created_at) AS created_at
+            FROM analytics.fact_forecast
+            WHERE forecast_run_type = 'backtest'
+        ), demand_error_by_date AS (
+            SELECT
+                target_date.calendar_date AS trend_date,
+                avg(abs(forecast.predicted_demand - forecast.actual_demand))
+                    AS trend_value
+            FROM analytics.fact_forecast AS forecast
+            JOIN analytics.dim_date AS target_date
+                ON target_date.date_key = forecast.target_date_key
+            CROSS JOIN latest_demand_batch AS latest
+            WHERE forecast.forecast_run_type = 'backtest'
+              AND forecast.model_role = 'selected'
+              AND forecast.created_at = latest.created_at
+              AND forecast.actual_demand IS NOT NULL
+            GROUP BY target_date.calendar_date
+            ORDER BY target_date.calendar_date DESC
+            LIMIT 30
+        ), latest_revenue_batch AS (
+            SELECT max(created_at) AS created_at
+            FROM analytics.fact_revenue_forecast
+            WHERE forecast_run_type = 'backtest'
+        ), revenue_error_by_date AS (
+            SELECT
+                target_date.calendar_date AS trend_date,
+                avg(
+                    abs(
+                        forecast.predicted_net_revenue
+                        - forecast.actual_net_revenue
+                    ) / NULLIF(forecast.actual_net_revenue, 0)
+                ) AS trend_value
+            FROM analytics.fact_revenue_forecast AS forecast
+            JOIN analytics.dim_date AS target_date
+                ON target_date.date_key = forecast.target_date_key
+            CROSS JOIN latest_revenue_batch AS latest
+            WHERE forecast.forecast_run_type = 'backtest'
+              AND forecast.model_role = 'selected'
+              AND forecast.created_at = latest.created_at
+              AND forecast.actual_net_revenue IS NOT NULL
+            GROUP BY target_date.calendar_date
+            ORDER BY target_date.calendar_date DESC
+            LIMIT 30
+        ), campaign_spend AS (
+            SELECT
+                campaign_date.calendar_date,
+                sum(delivery.spend) AS spend
+            FROM analytics.fact_campaign_daily AS delivery
+            JOIN analytics.dim_date AS campaign_date
+                ON campaign_date.date_key = delivery.date_key
+            GROUP BY campaign_date.calendar_date
+        ), campaign_match_by_date AS (
+            SELECT
+                matched.treatment_date AS trend_date,
+                sum(matched.net_revenue_lift)
+                    / NULLIF(sum(matched.control_net_revenue), 0)
+                    AS revenue_lift_ratio,
+                (
+                    sum(matched.net_revenue_lift)
+                    - max(coalesce(spend.spend, 0))
+                ) / NULLIF(max(spend.spend), 0) AS net_gain_per_dollar
+            FROM analytics.vw_latest_campaign_match AS matched
+            LEFT JOIN campaign_spend AS spend
+                ON spend.calendar_date = matched.treatment_date
+            GROUP BY matched.treatment_date
+            ORDER BY matched.treatment_date DESC
+            LIMIT 30
+        ), trend_series AS (
+            SELECT
+                'Forecast Demand'::text AS metric_name,
+                action.target_date AS trend_date,
+                action.predicted_demand::numeric AS trend_value
+            FROM analytics.vw_daily_business_action_plan AS action
+            UNION ALL
+            SELECT
+                'Forecast Revenue',
+                action.target_date,
+                action.predicted_net_revenue::numeric
+            FROM analytics.vw_daily_business_action_plan AS action
+            UNION ALL
+            SELECT
+                'Peak Capacity Use',
+                action.target_date,
+                action.forecast_capacity_utilization::numeric
+            FROM analytics.vw_daily_business_action_plan AS action
+            UNION ALL
+            SELECT
+                'Review Dates',
+                action.target_date,
+                CASE
+                    WHEN action.recommended_action_code <> 'maintain_plan'
+                      OR action.revenue_status <> 'revenue_on_plan'
+                        THEN 1::numeric
+                    ELSE 0::numeric
+                END
+            FROM analytics.vw_daily_business_action_plan AS action
+            UNION ALL
+            SELECT
+                'Campaign Revenue Lift',
+                trend_date,
+                revenue_lift_ratio
+            FROM campaign_match_by_date
+            UNION ALL
+            SELECT
+                'Marketing Net Gain',
+                trend_date,
+                net_gain_per_dollar
+            FROM campaign_match_by_date
+            WHERE net_gain_per_dollar IS NOT NULL
+            UNION ALL
+            SELECT
+                'Demand Error',
+                trend_date,
+                trend_value
+            FROM demand_error_by_date
+            UNION ALL
+            SELECT
+                'Revenue Error',
+                trend_date,
+                trend_value
+            FROM revenue_error_by_date
+        ), ranked_series AS (
+            SELECT
+                trend_series.*,
+                row_number() OVER (
+                    PARTITION BY metric_name
+                    ORDER BY trend_date DESC
+                ) AS recency_rank
+            FROM trend_series
+            WHERE trend_value IS NOT NULL
+        )
+        SELECT
+            metric_name,
+            trend_date,
+            row_number() OVER (
+                PARTITION BY metric_name
+                ORDER BY trend_date
+            )::integer AS trend_order,
+            trend_value
+        FROM ranked_series
+        WHERE recency_rank <= 5
+        ORDER BY metric_name, trend_date
+        """,
+        ("trend_date",),
+    )
+
     return {
         "planning": planning,
         "demand_series": demand_series,
@@ -333,6 +492,7 @@ def load_dashboard_data(engine: Engine) -> dict[str, pd.DataFrame]:
         "accuracy": accuracy,
         "campaign": campaign,
         "product": product,
+        "kpi_trends": kpi_trends,
     }
 
 
@@ -361,6 +521,22 @@ def validate_dashboard_data(data: dict[str, pd.DataFrame]) -> None:
         raise ValueError("Revenue series must contain four series for 30 dates")
     if len(data["product"]) != 120:
         raise ValueError("Product forecast must contain four products for 30 dates")
+
+    trend_counts = data["kpi_trends"].groupby("metric_name").size()
+    expected_trends = {
+        "Forecast Demand",
+        "Forecast Revenue",
+        "Peak Capacity Use",
+        "Review Dates",
+        "Campaign Revenue Lift",
+        "Marketing Net Gain",
+        "Demand Error",
+        "Revenue Error",
+    }
+    if set(trend_counts.index) != expected_trends:
+        raise ValueError("KPI trend data is missing one or more required metrics")
+    if (trend_counts != 5).any():
+        raise ValueError("Each KPI trend must contain exactly five recent points")
 
 
 # Purpose: Write small, reviewable snapshots used by the Tableau workbook.
@@ -519,7 +695,7 @@ def create_workbook_root() -> ET.Element:
         "color-palette",
         {"custom": "true", "name": "Orlando Planning", "type": "regular"},
     )
-    for color in (NAVY, TEAL, ORANGE, RED, "#6C7A89", "#A7D8D8"):
+    for color in (NAVY, BLUE, TEAL, ORANGE, RED, GRAY):
         ET.SubElement(palette, "color").text = color
     return root
 
@@ -784,7 +960,57 @@ def create_sheet_base(
     return worksheet, table, view
 
 
-# Purpose: Add a large-number KPI worksheet.
+# Purpose: Find or create one worksheet-level formatting rule.
+# Used by: add_clean_chart_rules and add_color_mapping.
+def get_style_rule(style: ET.Element, element_name: str) -> ET.Element:
+    for rule in style.findall("style-rule"):
+        if rule.attrib.get("element") == element_name:
+            return rule
+    return ET.SubElement(style, "style-rule", {"element": element_name})
+
+
+# Purpose: Remove non-data ink while preserving tick labels and unit titles.
+# Used by: add_line_sheet and add_bar_sheet.
+def add_clean_chart_rules(style: ET.Element) -> None:
+    for element_name in ("gridline", "zeroline"):
+        rule = get_style_rule(style, element_name)
+        ET.SubElement(rule, "format", {"attr": "stroke-size", "value": "0"})
+        ET.SubElement(rule, "format", {"attr": "line-visibility", "value": "off"})
+
+    axis_rule = get_style_rule(style, "axis")
+    for scope in ("rows", "cols"):
+        ET.SubElement(
+            axis_rule,
+            "format",
+            {"attr": "line-visibility", "scope": scope, "value": "off"},
+        )
+
+
+# Purpose: Keep series and category colors stable across workbook rebuilds.
+# Used by: add_line_sheet and add_bar_sheet when color encodes meaning.
+def add_color_mapping(
+    style: ET.Element,
+    source: DataSourceSpec,
+    field_name: str,
+    color_map: dict[str, str],
+) -> None:
+    rule = get_style_rule(style, "mark")
+    encoding = ET.SubElement(
+        rule,
+        "encoding",
+        {
+            "attr": "color",
+            "field": f"[{source.key}].{instance_name(FieldSpec(field_name))}",
+            "palette": "temp",
+            "type": "palette",
+        },
+    )
+    for member, color in color_map.items():
+        mapping = ET.SubElement(encoding, "map", {"to": color})
+        ET.SubElement(mapping, "bucket").text = f'"{member}"'
+
+
+# Purpose: Add a compact KPI worksheet that leaves room for an adjacent sparkline.
 # Used by: build_workbook_xml for dashboard headline metrics.
 def add_kpi_sheet(
     worksheets: ET.Element,
@@ -795,6 +1021,9 @@ def add_kpi_sheet(
     filters: dict[str, Any] | None = None,
     prefix: str = "",
     suffix: str = "",
+    value_color: str = NAVY,
+    context_text: str = "",
+    context_color: str = MUTED_TEXT,
 ) -> None:
     filter_fields = [FieldSpec(field) for field in (filters or {})]
     worksheet, table, _ = create_sheet_base(
@@ -818,17 +1047,121 @@ def add_kpi_sheet(
     run = ET.SubElement(
         formatted,
         "run",
-        {"fontcolor": NAVY, "fontname": "Tableau Light", "fontsize": "24"},
+        {"fontcolor": value_color, "fontname": "Tableau Medium", "fontsize": "18"},
     )
     run.text = f"{prefix}<{reference}>{suffix}"
+    if context_text:
+        context_run = ET.SubElement(
+            formatted,
+            "run",
+            {
+                "fontcolor": context_color,
+                "fontname": "Tableau Light",
+                "fontsize": "8",
+            },
+        )
+        context_run.text = f"\n{context_text}"
     style = ET.SubElement(pane, "style")
     cell_rule = ET.SubElement(style, "style-rule", {"element": "cell"})
-    ET.SubElement(cell_rule, "format", {"attr": "text-align", "value": "center"})
+    ET.SubElement(cell_rule, "format", {"attr": "text-align", "value": "left"})
     ET.SubElement(cell_rule, "format", {"attr": "vertical-align", "value": "center"})
+    ET.SubElement(cell_rule, "format", {"attr": "wrap", "value": "true"})
     mark_rule = ET.SubElement(style, "style-rule", {"element": "mark"})
     ET.SubElement(mark_rule, "format", {"attr": "mark-labels-show", "value": "true"})
     ET.SubElement(table, "rows")
     ET.SubElement(table, "cols")
+    ET.SubElement(worksheet, "simple-id", {"uuid": f"{{{str(uuid.uuid4()).upper()}}}"})
+
+
+# Purpose: Add a minimalist five-point recent trend line for one KPI card.
+# Used by: build_workbook_xml beside every headline KPI.
+def add_sparkline_sheet(
+    worksheets: ET.Element,
+    source: DataSourceSpec,
+    name: str,
+    metric_name: str,
+    mark_color: str,
+) -> None:
+    order = FieldSpec("trend_order")
+    measure = FieldSpec("trend_value", "sum")
+    worksheet, table, _ = create_sheet_base(
+        worksheets,
+        name,
+        "",
+        source,
+        [order, measure, FieldSpec("metric_name")],
+        {"metric_name": metric_name},
+    )
+
+    layout = worksheet.find("layout-options")
+    if layout is not None:
+        worksheet.remove(layout)
+
+    table_style = table.find("style")
+    if table_style is None:
+        raise RuntimeError("Worksheet table style was not created")
+    add_clean_chart_rules(table_style)
+    axis_rule = get_style_rule(table_style, "axis")
+    ET.SubElement(
+        axis_rule,
+        "format",
+        {
+            "attr": "display",
+            "class": "0",
+            "field": f"[{source.key}].{instance_name(measure)}",
+            "scope": "rows",
+            "value": "false",
+        },
+    )
+    header_rule = get_style_rule(table_style, "header")
+    ET.SubElement(
+        header_rule,
+        "format",
+        {
+            "attr": "display",
+            "class": "0",
+            "field": f"[{source.key}].{instance_name(order)}",
+            "scope": "cols",
+            "value": "false",
+        },
+    )
+    ET.SubElement(
+        axis_rule,
+        "format",
+        {
+            "attr": "display",
+            "class": "0",
+            "field": f"[{source.key}].{instance_name(order)}",
+            "scope": "cols",
+            "value": "false",
+        },
+    )
+    worksheet_rule = get_style_rule(table_style, "worksheet")
+    ET.SubElement(
+        worksheet_rule,
+        "format",
+        {
+            "attr": "display-field-labels",
+            "scope": "cols",
+            "value": "false",
+        },
+    )
+
+    panes = ET.SubElement(table, "panes")
+    pane = ET.SubElement(
+        panes,
+        "pane",
+        {"selection-relaxation-option": "selection-relaxation-allow"},
+    )
+    pane_view = ET.SubElement(pane, "view")
+    ET.SubElement(pane_view, "breakdown", {"value": "auto"})
+    ET.SubElement(pane, "mark", {"class": "Line"})
+    style = ET.SubElement(pane, "style")
+    mark_rule = ET.SubElement(style, "style-rule", {"element": "mark"})
+    ET.SubElement(mark_rule, "format", {"attr": "mark-color", "value": mark_color})
+    ET.SubElement(mark_rule, "format", {"attr": "mark-labels-show", "value": "false"})
+    ET.SubElement(table, "rows").text = f"[{source.key}].{instance_name(measure)}"
+    ET.SubElement(table, "cols").text = f"[{source.key}].{instance_name(order)}"
     ET.SubElement(worksheet, "simple-id", {"uuid": f"{{{str(uuid.uuid4()).upper()}}}"})
 
 
@@ -845,6 +1178,8 @@ def add_line_sheet(
     filters: dict[str, Any] | None = None,
     x_axis_title: str | None = None,
     y_axis_title: str | None = None,
+    mark_color: str = NAVY,
+    color_map: dict[str, str] | None = None,
 ) -> None:
     date = FieldSpec(date_field)
     measure = FieldSpec(measure_field, "sum")
@@ -884,6 +1219,9 @@ def add_line_sheet(
                     "value": y_axis_title,
                 },
             )
+    add_clean_chart_rules(table_style)
+    if color_field and color_map:
+        add_color_mapping(table_style, source, color_field, color_map)
     panes = ET.SubElement(table, "panes")
     pane = ET.SubElement(panes, "pane", {"selection-relaxation-option": "selection-relaxation-allow"})
     pane_view = ET.SubElement(pane, "view")
@@ -898,7 +1236,7 @@ def add_line_sheet(
         )
     style = ET.SubElement(pane, "style")
     mark_rule = ET.SubElement(style, "style-rule", {"element": "mark"})
-    ET.SubElement(mark_rule, "format", {"attr": "mark-color", "value": TEAL})
+    ET.SubElement(mark_rule, "format", {"attr": "mark-color", "value": mark_color})
     ET.SubElement(table, "rows").text = f"[{source.key}].{instance_name(measure)}"
     ET.SubElement(table, "cols").text = f"[{source.key}].{instance_name(date)}"
     ET.SubElement(worksheet, "simple-id", {"uuid": f"{{{str(uuid.uuid4()).upper()}}}"})
@@ -917,6 +1255,8 @@ def add_bar_sheet(
     color_field: str | None = None,
     axis_title: str | None = None,
     category_width: int | None = None,
+    mark_color: str = NAVY,
+    color_map: dict[str, str] | None = None,
 ) -> None:
     category = FieldSpec(category_field)
     fields = [category, measure]
@@ -953,6 +1293,9 @@ def add_bar_sheet(
                 "value": str(category_width),
             },
         )
+    add_clean_chart_rules(table_style)
+    if color_field and color_map:
+        add_color_mapping(table_style, source, color_field, color_map)
     panes = ET.SubElement(table, "panes")
     pane = ET.SubElement(panes, "pane", {"selection-relaxation-option": "selection-relaxation-allow"})
     pane_view = ET.SubElement(pane, "view")
@@ -970,7 +1313,7 @@ def add_bar_sheet(
     style = ET.SubElement(pane, "style")
     mark_rule = ET.SubElement(style, "style-rule", {"element": "mark"})
     ET.SubElement(mark_rule, "format", {"attr": "mark-labels-show", "value": "true"})
-    ET.SubElement(mark_rule, "format", {"attr": "mark-color", "value": TEAL})
+    ET.SubElement(mark_rule, "format", {"attr": "mark-color", "value": mark_color})
     ET.SubElement(table, "rows").text = f"[{source.key}].{instance_name(category)}"
     ET.SubElement(table, "cols").text = measure_reference
     ET.SubElement(worksheet, "simple-id", {"uuid": f"{{{str(uuid.uuid4()).upper()}}}"})
@@ -1016,14 +1359,25 @@ def add_text_sheet(
     ET.SubElement(worksheet, "simple-id", {"uuid": f"{{{str(uuid.uuid4()).upper()}}}"})
 
 
-# Purpose: Add consistent borders, padding, and background to a dashboard zone.
+# Purpose: Add consistent spacing and optional framing to a dashboard zone.
 # Used by: add_dashboard.
-def add_zone_style(zone: ET.Element, background: str = "#FFFFFF") -> None:
+def add_zone_style(
+    zone: ET.Element,
+    background: str = "#FFFFFF",
+    *,
+    framed: bool = True,
+    margin: int = 6,
+) -> None:
     style = ET.SubElement(zone, "zone-style")
-    ET.SubElement(style, "format", {"attr": "border-color", "value": "#D9E2E8"})
-    ET.SubElement(style, "format", {"attr": "border-style", "value": "solid"})
-    ET.SubElement(style, "format", {"attr": "border-width", "value": "1"})
-    ET.SubElement(style, "format", {"attr": "margin", "value": "6"})
+    ET.SubElement(
+        style,
+        "format",
+        {"attr": "border-style", "value": "solid" if framed else "none"},
+    )
+    if framed:
+        ET.SubElement(style, "format", {"attr": "border-color", "value": "#D9E2E8"})
+        ET.SubElement(style, "format", {"attr": "border-width", "value": "1"})
+    ET.SubElement(style, "format", {"attr": "margin", "value": str(margin)})
     ET.SubElement(style, "format", {"attr": "background-color", "value": background})
 
 
@@ -1036,6 +1390,7 @@ def add_dashboard(
     subtitle: str,
     zones: list[tuple[str, int, int, int, int]],
     legends: list[tuple[str, DataSourceSpec, str, int, int, int, int]] | None = None,
+    unframed_sheets: set[str] | None = None,
 ) -> None:
     dashboard = ET.SubElement(
         dashboards,
@@ -1053,8 +1408,8 @@ def add_dashboard(
     ET.SubElement(
         formatted,
         "run",
-        {"fontcolor": "#506475", "fontname": "Tableau Light", "fontsize": "11"},
-    ).text = f"  |  {subtitle}"
+        {"fontcolor": MUTED_TEXT, "fontname": "Tableau Light", "fontsize": "11"},
+    ).text = f"\n{subtitle}"
     ET.SubElement(
         dashboard,
         "size",
@@ -1079,20 +1434,24 @@ def add_dashboard(
     )
     add_zone_style(title_zone, LIGHT_BLUE)
     for zone_id, (sheet, x, y, width, height) in enumerate(zones, start=3):
+        zone_attributes = {
+            "h": str(height),
+            "id": str(zone_id),
+            "name": sheet,
+            "w": str(width),
+            "x": str(x),
+            "y": str(y),
+        }
+        if sheet.startswith("Trend -"):
+            zone_attributes["show-title"] = "false"
         zone = ET.SubElement(
             root_zone,
             "zone",
-            {
-                "h": str(height),
-                "id": str(zone_id),
-                "name": sheet,
-                "w": str(width),
-                "x": str(x),
-                "y": str(y),
-            },
+            zone_attributes,
         )
         ET.SubElement(zone, "layout-cache", {"type-h": "scalable", "type-w": "scalable"})
-        add_zone_style(zone)
+        is_unframed = sheet in (unframed_sheets or set())
+        add_zone_style(zone, framed=not is_unframed, margin=0 if is_unframed else 6)
     next_zone_id = 3 + len(zones)
     for offset, (
         sheet,
@@ -1190,50 +1549,131 @@ def build_workbook_xml(
     accuracy = specs["accuracy"]
     campaign = specs["campaign"]
     product = specs["product"]
+    kpi_trends = specs["kpi_trends"]
+
+    planning_frame = planning.frame
+    demand_plan_gap = (
+        planning_frame["predicted_demand"].sum()
+        / planning_frame["demand_target"].sum()
+        - 1.0
+    )
+    revenue_plan_gap = (
+        planning_frame["predicted_net_revenue"].sum()
+        / planning_frame["revenue_target"].sum()
+        - 1.0
+    )
+    peak_capacity = float(planning_frame["peak_capacity_utilization"].max())
+    capacity_headroom = 0.85 - peak_capacity
+    review_days = int((planning_frame["decision_scope"] == "Review").sum())
+    no_change_days = len(planning_frame) - review_days
+
+    campaign_kpi = campaign.frame.loc[
+        (campaign.frame["outcome_name"] == "net_revenue")
+        & (campaign.frame["estimator_name"] == "matched_block_bootstrap")
+        & (campaign.frame["period_name"] == "campaign_window")
+    ]
+    campaign_difference = float(campaign_kpi["estimate_ratio"].iloc[0])
+    marketing_return = float(
+        campaign.frame["associated_return_after_spend"].iloc[0]
+    )
+
+    demand_arrow = "▲" if demand_plan_gap >= 0 else "▼"
+    revenue_arrow = "▲" if revenue_plan_gap >= 0 else "▼"
+    campaign_arrow = "▲" if campaign_difference >= 0 else "▼"
+    campaign_direction = "higher" if campaign_difference >= 0 else "lower"
 
     add_kpi_sheet(
         worksheets,
         planning,
         "KPI - Forecast Demand",
-        "Expected 30-Day Demand",
+        "30-Day Demand",
         FieldSpec("predicted_demand", "sum"),
         suffix=" tickets",
+        context_text=(
+            f"{demand_arrow} {abs(demand_plan_gap):.1%} vs demand plan"
+        ),
+        context_color=(
+            TEAL if demand_plan_gap >= 0 and peak_capacity < 0.85 else ORANGE
+        ),
+    )
+    add_sparkline_sheet(
+        worksheets,
+        kpi_trends,
+        "Trend - Forecast Demand",
+        "Forecast Demand",
+        BLUE,
     )
     add_kpi_sheet(
         worksheets,
         planning,
         "KPI - Forecast Revenue",
-        "Expected 30-Day Net Revenue",
+        "Net Revenue",
         FieldSpec("predicted_net_revenue", "sum"),
         prefix="$",
+        value_color=TEAL,
+        context_text=(
+            f"{revenue_arrow} {abs(revenue_plan_gap):.1%} vs revenue plan"
+        ),
+        context_color=TEAL if revenue_plan_gap >= 0 else ORANGE,
+    )
+    add_sparkline_sheet(
+        worksheets,
+        kpi_trends,
+        "Trend - Forecast Revenue",
+        "Forecast Revenue",
+        TEAL,
     )
     add_kpi_sheet(
         worksheets,
         planning,
         "KPI - Peak Capacity Use",
-        "Peak Capacity Used",
+        "Peak Capacity",
         FieldSpec("peak_capacity_utilization", "max"),
+        value_color=BLUE,
+        context_text=(
+            f"▼ {capacity_headroom * 100:.1f} pp below 85% watch level"
+            if capacity_headroom >= 0
+            else f"▲ {abs(capacity_headroom) * 100:.1f} pp above 85% watch level"
+        ),
+        context_color=TEAL if capacity_headroom >= 0 else RED,
+    )
+    add_sparkline_sheet(
+        worksheets,
+        kpi_trends,
+        "Trend - Peak Capacity Use",
+        "Peak Capacity Use",
+        BLUE,
     )
     add_kpi_sheet(
         worksheets,
         planning,
         "KPI - Review Dates",
-        "Dates Needing Review",
+        "Dates to Review",
         FieldSpec("target_date", "count"),
         filters={"decision_scope": "Review"},
         suffix=" days",
+        value_color=ORANGE,
+        context_text=f"✓ {no_change_days} of 30 days need no change",
+        context_color=TEAL,
+    )
+    add_sparkline_sheet(
+        worksheets,
+        kpi_trends,
+        "Trend - Review Dates",
+        "Review Dates",
+        ORANGE,
     )
     add_line_sheet(
         worksheets,
         demand_series,
         "Daily Demand Plan",
-        "Daily Ticket Demand versus Plan and Capacity",
+        "Daily Ticket Demand vs Plan",
         "forecast_date",
         "tickets",
         "series_name",
-        filters={"series_scope": "Planning"},
-        x_axis_title="Forecast Date",
+        filters={"series_scope": "Primary"},
         y_axis_title="Tickets",
+        color_map={"Forecast": NAVY, "Plan": ORANGE},
     )
     add_text_sheet(
         worksheets,
@@ -1248,127 +1688,189 @@ def build_workbook_xml(
         worksheets,
         revenue_series,
         "Daily Revenue Plan",
-        "Daily Net Revenue Forecast, Range, and Plan",
+        "Daily Net Revenue vs Plan",
         "forecast_date",
         "net_revenue_dollars",
         "series_name",
-        x_axis_title="Forecast Date",
+        filters={"series_scope": "Primary"},
         y_axis_title="Net Revenue ($)",
+        color_map={"Forecast": NAVY, "Plan": ORANGE},
     )
 
     add_kpi_sheet(
         worksheets,
         campaign,
         "KPI - Campaign Difference",
-        "Campaign-Day Revenue Difference",
+        "Campaign Lift",
         FieldSpec("estimate_ratio", "min"),
         filters={
             "outcome_name": "net_revenue",
             "estimator_name": "matched_block_bootstrap",
             "period_name": "campaign_window",
         },
+        value_color=TEAL if campaign_difference >= 0 else ORANGE,
+        context_text=(
+            f"{campaign_arrow} {campaign_direction} than matched dates"
+        ),
+        context_color=TEAL if campaign_difference >= 0 else ORANGE,
+    )
+    add_sparkline_sheet(
+        worksheets,
+        kpi_trends,
+        "Trend - Campaign Difference",
+        "Campaign Revenue Lift",
+        TEAL if campaign_difference >= 0 else ORANGE,
     )
     add_kpi_sheet(
         worksheets,
         campaign,
         "KPI - Marketing Net Gain",
-        "Net Gain per $1 Marketing Spend",
+        "Return per $1",
         FieldSpec("associated_return_after_spend", "min"),
         prefix="$",
+        value_color=TEAL if marketing_return >= 0 else RED,
+        context_text=(
+            "▲ positive after marketing spend"
+            if marketing_return >= 0
+            else "▼ negative after marketing spend"
+        ),
+        context_color=TEAL if marketing_return >= 0 else RED,
+    )
+    add_sparkline_sheet(
+        worksheets,
+        kpi_trends,
+        "Trend - Marketing Net Gain",
+        "Marketing Net Gain",
+        TEAL if marketing_return >= 0 else RED,
     )
     add_kpi_sheet(
         worksheets,
         planning,
         "KPI - Demand Error",
-        "Typical Daily Demand Error (MAE)",
+        "Demand Error",
         FieldSpec("selected_demand_mae", "min"),
         suffix=" tickets",
+        value_color=BLUE,
+        context_text="↓ Lower means more accurate",
+        context_color=MUTED_TEXT,
+    )
+    add_sparkline_sheet(
+        worksheets,
+        kpi_trends,
+        "Trend - Demand Error",
+        "Demand Error",
+        BLUE,
     )
     add_kpi_sheet(
         worksheets,
         planning,
         "KPI - Revenue Error",
-        "Revenue Forecast Error (WAPE)",
+        "Revenue Error",
         FieldSpec("selected_revenue_wape_pct", "min"),
         suffix="%",
+        value_color=ORANGE,
+        context_text="↓ Lower means more accurate",
+        context_color=MUTED_TEXT,
+    )
+    add_sparkline_sheet(
+        worksheets,
+        kpi_trends,
+        "Trend - Revenue Error",
+        "Revenue Error",
+        ORANGE,
     )
     add_bar_sheet(
         worksheets,
         product,
         "Product Revenue Mix",
-        "Which Ticket Types Generate the 30-Day Revenue Forecast?",
+        "30-Day Net Revenue by Ticket Type",
         "product_name",
         FieldSpec("predicted_product_net_revenue", "sum"),
         axis_title="30-Day Net Revenue ($)",
         category_width=170,
+        mark_color=NAVY,
     )
     add_bar_sheet(
         worksheets,
         campaign,
         "Campaign Comparison",
-        "Campaign Days Earned More than Comparable Days",
+        "Campaign-Day Revenue vs Comparable Dates",
         "estimator_label",
         FieldSpec("estimate_ratio", "min"),
         filters={"outcome_name": "net_revenue", "period_name": "campaign_window"},
-        axis_title="Revenue Difference",
+        axis_title="Revenue Difference (%)",
         category_width=210,
+        color_field="estimator_label",
+        color_map={
+            "Similar non-campaign dates": TEAL,
+            "Adjusted for observed factors": BLUE,
+        },
     )
     add_bar_sheet(
         worksheets,
         accuracy,
         "Demand Error by Range",
-        "Typical Daily Ticket Error by Forecast Range (MAE)",
+        "Demand Error by Forecast Range (MAE)",
         "forecast_range",
         FieldSpec("demand_mae_tickets", "min"),
         filters={"forecast_domain": "Demand"},
-        axis_title="Typical Daily Error (Tickets)",
+        axis_title="Daily Error (Tickets)",
         category_width=150,
+        mark_color=BLUE,
     )
     add_bar_sheet(
         worksheets,
         accuracy,
         "Revenue Error by Range",
-        "Revenue Forecast Error by Forecast Range (WAPE)",
+        "Revenue Error by Forecast Range (WAPE)",
         "forecast_range",
         FieldSpec("revenue_wape_ratio", "min"),
         filters={"forecast_domain": "Revenue"},
-        axis_title="Revenue Error (WAPE)",
+        axis_title="Revenue Error (%)",
         category_width=150,
+        mark_color=ORANGE,
     )
 
     dashboards = ET.SubElement(root, "dashboards")
     outlook_sheets = [
         "KPI - Forecast Demand",
+        "Trend - Forecast Demand",
         "KPI - Forecast Revenue",
+        "Trend - Forecast Revenue",
         "KPI - Peak Capacity Use",
+        "Trend - Peak Capacity Use",
         "KPI - Review Dates",
+        "Trend - Review Dates",
         "Daily Demand Plan",
         "Decision Dates",
         "Daily Revenue Plan",
     ]
-    review_days = int((planning.frame["decision_scope"] == "Review").sum())
     add_dashboard(
         dashboards,
         "30-Day Outlook & Actions",
-        f"30-Day Plan: Capacity Is Sufficient; {review_days} Dates Need Review",
-        "Use this page to plan daily staffing, protect price on strong days, and monitor revenue shortfalls.",
+        f"30-Day Operating Plan: Capacity Is Sufficient; {review_days} Dates Need Review",
+        "See expected tickets and net revenue, then focus staffing, pricing, and promotion on the highlighted dates.",
         [
-            (outlook_sheets[0], 0, 10000, 25000, 15000),
-            (outlook_sheets[1], 25000, 10000, 25000, 15000),
-            (outlook_sheets[2], 50000, 10000, 25000, 15000),
-            (outlook_sheets[3], 75000, 10000, 25000, 15000),
-            (outlook_sheets[4], 0, 25000, 65000, 38000),
-            (outlook_sheets[5], 65000, 25000, 35000, 38000),
-            (outlook_sheets[6], 0, 63000, 100000, 37000),
+            (outlook_sheets[0], 0, 10000, 16500, 15000),
+            (outlook_sheets[1], 16500, 10000, 8500, 15000),
+            (outlook_sheets[2], 25000, 10000, 16500, 15000),
+            (outlook_sheets[3], 41500, 10000, 8500, 15000),
+            (outlook_sheets[4], 50000, 10000, 16500, 15000),
+            (outlook_sheets[5], 66500, 10000, 8500, 15000),
+            (outlook_sheets[6], 75000, 10000, 16500, 15000),
+            (outlook_sheets[7], 91500, 10000, 8500, 15000),
+            (outlook_sheets[8], 0, 25000, 70000, 38000),
+            (outlook_sheets[9], 70000, 25000, 30000, 38000),
+            (outlook_sheets[10], 0, 63000, 100000, 37000),
         ],
         legends=[
             (
                 "Daily Demand Plan",
                 demand_series,
                 "series_name",
-                23000,
+                26000,
                 31500,
-                41000,
+                40000,
                 5000,
             ),
             (
@@ -1381,13 +1883,18 @@ def build_workbook_xml(
                 5000,
             ),
         ],
+        unframed_sheets=set(outlook_sheets[:8]),
     )
 
     drivers_sheets = [
         "KPI - Campaign Difference",
+        "Trend - Campaign Difference",
         "KPI - Marketing Net Gain",
+        "Trend - Marketing Net Gain",
         "KPI - Demand Error",
+        "Trend - Demand Error",
         "KPI - Revenue Error",
+        "Trend - Revenue Error",
         "Product Revenue Mix",
         "Campaign Comparison",
         "Demand Error by Range",
@@ -1396,18 +1903,23 @@ def build_workbook_xml(
     add_dashboard(
         dashboards,
         "Revenue Drivers & Confidence",
-        "Revenue Drivers & Forecast Confidence",
-        "Use this page to see which products generate revenue, how campaign periods differ, and how error changes with lead time; campaign results are observational.",
+        "What Drives Revenue—and How Much Confidence to Place in the Forecast",
+        "See ticket mix, campaign-period differences, and how error changes with lead time. Campaign comparisons are associations, not causal proof.",
         [
-            (drivers_sheets[0], 0, 10000, 25000, 15000),
-            (drivers_sheets[1], 25000, 10000, 25000, 15000),
-            (drivers_sheets[2], 50000, 10000, 25000, 15000),
-            (drivers_sheets[3], 75000, 10000, 25000, 15000),
-            (drivers_sheets[4], 0, 25000, 50000, 40000),
-            (drivers_sheets[5], 50000, 25000, 50000, 40000),
-            (drivers_sheets[6], 0, 65000, 50000, 35000),
-            (drivers_sheets[7], 50000, 65000, 50000, 35000),
+            (drivers_sheets[0], 0, 10000, 18500, 15000),
+            (drivers_sheets[1], 18500, 10000, 6500, 15000),
+            (drivers_sheets[2], 25000, 10000, 16500, 15000),
+            (drivers_sheets[3], 41500, 10000, 8500, 15000),
+            (drivers_sheets[4], 50000, 10000, 16500, 15000),
+            (drivers_sheets[5], 66500, 10000, 8500, 15000),
+            (drivers_sheets[6], 75000, 10000, 16500, 15000),
+            (drivers_sheets[7], 91500, 10000, 8500, 15000),
+            (drivers_sheets[8], 0, 25000, 50000, 40000),
+            (drivers_sheets[9], 50000, 25000, 50000, 40000),
+            (drivers_sheets[10], 0, 65000, 50000, 35000),
+            (drivers_sheets[11], 50000, 65000, 50000, 35000),
         ],
+        unframed_sheets=set(drivers_sheets[:8]),
     )
 
     dashboard_sheets = {
@@ -1480,7 +1992,7 @@ def main() -> None:
     print(f"TWB:  {twb_path}")
     print(f"TWBX: {twbx_path}")
     print(f"Planning rows: {len(data['planning']):,}")
-    print("Worksheets: 15")
+    print("Worksheets: 23")
     print("Dashboards: 2")
 
 

@@ -1,0 +1,41 @@
+metric_name,trend_date,trend_order,trend_value
+Campaign Revenue Lift,2025-12-11,1,0.184114
+Campaign Revenue Lift,2025-12-12,2,0.335507
+Campaign Revenue Lift,2025-12-13,3,-0.040241
+Campaign Revenue Lift,2025-12-14,4,0.146615
+Campaign Revenue Lift,2025-12-15,5,0.177674
+Demand Error,2025-12-26,1,63.330000
+Demand Error,2025-12-27,2,177.390000
+Demand Error,2025-12-28,3,75.780000
+Demand Error,2025-12-29,4,38.130000
+Demand Error,2025-12-30,5,114.660000
+Forecast Demand,2026-01-26,1,1010.370000
+Forecast Demand,2026-01-27,2,914.010000
+Forecast Demand,2026-01-28,3,995.970000
+Forecast Demand,2026-01-29,4,1075.000000
+Forecast Demand,2026-01-30,5,1305.970000
+Forecast Revenue,2026-01-26,1,105965.740000
+Forecast Revenue,2026-01-27,2,101608.230000
+Forecast Revenue,2026-01-28,3,104510.850000
+Forecast Revenue,2026-01-29,4,115998.240000
+Forecast Revenue,2026-01-30,5,139199.760000
+Marketing Net Gain,2025-12-11,1,21.534449
+Marketing Net Gain,2025-12-12,2,46.480947
+Marketing Net Gain,2025-12-13,3,-10.470542
+Marketing Net Gain,2025-12-14,4,24.278281
+Marketing Net Gain,2025-12-15,5,18.878685
+Peak Capacity Use,2026-01-26,1,0.429900
+Peak Capacity Use,2026-01-27,2,0.388900
+Peak Capacity Use,2026-01-28,3,0.423800
+Peak Capacity Use,2026-01-29,4,0.457400
+Peak Capacity Use,2026-01-30,5,0.555700
+Revenue Error,2025-12-26,1,0.043095
+Revenue Error,2025-12-27,2,0.089732
+Revenue Error,2025-12-28,3,0.044591
+Revenue Error,2025-12-29,4,0.025824
+Revenue Error,2025-12-30,5,0.117788
+Review Dates,2026-01-26,1,0.000000
+Review Dates,2026-01-27,2,0.000000
+Review Dates,2026-01-28,3,0.000000
+Review Dates,2026-01-29,4,0.000000
+Review Dates,2026-01-30,5,0.000000
